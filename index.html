@@ -2,44 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Blog</title>
+    <title>Please be a penguin. Pretty Please</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+
+    <!-- MathJax CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
             margin: 2rem auto;
-            max-width: 700px;
-            background: #fafafa;
-            color: #222;
-            line-height: 1.7;
+            max-width: 720px;
+            background: #fdfdfd;
+            color: #1a1a1a;
+            line-height: 1.8;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 8px;
         }
+
         h1, h2, h3 {
-            font-family: 'Roboto', Arial, sans-serif;
             font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: #1a202c;
+            color: #2d3748;
         }
+
         h1 {
-            font-size: 2.5rem;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 2.75rem;
+            border-bottom: 2px solid #cbd5e0;
             padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
         }
+
         h2 {
             font-size: 2rem;
             border-left: 4px solid #3182ce;
-            padding-left: 0.5rem;
+            padding-left: 0.75rem;
+            margin-top: 2rem;
         }
+
         h3 {
             font-size: 1.5rem;
             color: #2b6cb0;
         }
+
         p {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Optional: Center block math */
+        .MathJax_Display {
+            text-align: center !important;
+            margin: 1rem 0 !important;
         }
     </style>
 </head>
 <body>
+
     <h1>Please be a penguin. Pretty Please</h1>
+
+    <p>Here is some math: \\(E = mc^2\\)</p>
+
+    <p>Displayed equation:</p>
+    \[  
+        \int_{0}^{\infty} e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+    \]
+
 </body>
 </html>
