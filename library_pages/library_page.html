@@ -69,7 +69,7 @@
     .nav-link {
       color: var(--text-color);
       text-decoration: none;
-      font-size: 1.25rem;
+      font-size: 0.95rem;
       font-weight: 500;
       margin-right: 1.5rem;
       letter-spacing: 0.3px;
@@ -87,9 +87,6 @@
       font-weight: 600;
     }
     
-
-
-
     main {
       padding: 1rem 0 4rem;
     }
@@ -98,18 +95,7 @@
       margin-bottom: 3rem;
       padding-bottom: 2rem;
       border-bottom: 1px solid var(--border-color);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-      background-color: var(--card-bg);
-      border-radius: 6px;
-      padding: 1rem;
     }
-
-    .post:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 112, 243, 0.15);
-      border-color: var(--accent-color);
-    }
-
     
     .post:last-child {
       border-bottom: none;
@@ -142,7 +128,7 @@
     .post-excerpt {
       margin-bottom: 1rem;
     }
-
+    
     .read-more {
       font-size: 0.9rem;
       color: var(--accent-color);
@@ -156,6 +142,10 @@
       content: "→";
       margin-left: 4px;
       transition: transform 0.2s ease;
+    }
+    
+    .read-more:hover:after {
+      transform: translateX(3px);
     }
     
     code {
@@ -193,45 +183,19 @@
   </style>
 </head>
 <body>
-
-    <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <!-- Left: Avatar + Title -->
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <img src="/assets/download.jfif" alt="Penguin Avatar" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid #eaeaea; object-fit: cover;" />
-          <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color); margin: 0;">A penguin's titles</h2>
-        </div>
-
-        <!-- Right: Home link -->
-        <div>
-          <a href="/index.html" class="nav-link header" style="font-size: 1rem;">Home</a>
-        </div>
-      </div>
-
+  <div class="container">
     <header>
-      <h1>Hi, penguin here</h1>
-      <p class="tagline">A genuine thank you for taking your time to open this page, currently its under works.
-        Feel free to read these articles anywhere you want to :)</p>
+      <h1>A penguin's library</h1>
     </header>
     
     <main>
-      <article class="post">
-        <h2 class="post-title">
-          <a href="blog_pages/about_b64.html">
-            <span style="font-weight:500; color:#888;">
-              2025/05/16 - 
-            </span>
-            So, about Base64
-          </a>
-        </h2>
-        <p class="post-excerpt">
-            Base64, One step at a time. 
-        </p>
-        <a href="blog_pages/about_b64.html" class="read-more">Continue reading</a>
-      </article>
-
+        <p>Nothing's here yet</p>
     </main>
     
+    <script>
+
+    </script>
+
     <footer>
       Built with <code>html</code> and <code>css</code>
     </footer>
