@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "title": "CrossOCR",
+      "description": "A lightweight multilingual OCR tool.",
+      "github": "https://github.com/Rishik00/CrossOCR",
+      "technologies": ["Ollama", "Gradio", "Transformers", "PaddleOCR"]
+    }
+    
+  ]
+}

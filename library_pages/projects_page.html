@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Penguin's Blog</title>
   <!-- Tech-inspired, highly readable fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary-color: #e4e4e7;
-      --accent-color:  #fafafa;
+      --accent-color: #e4e4e7;
       --background-color: #0f0f0f;
       --card-bg: #1a1a1a;
       --text-color: #e4e4e7;
@@ -21,7 +23,7 @@
 
     [data-theme="light"] {
       --primary-color: #1a1a1a;
-      --accent-color:  #fafafa;
+      --accent-color: #0070f3;
       --background-color: #fafafa;
       --card-bg: #ffffff;
       --text-color: #333333;
@@ -120,6 +122,67 @@
     main {
       padding: 1rem 0 4rem;
     }
+
+    .projects-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] .project-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .project-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.2px;
+    }
+
+    .project-description {
+      color: var(--secondary-text);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .project-link:hover {
+      transform: translateX(2px);
+    }
+
+    .project-link::before {
+      content: "→";
+      margin-right: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+
+    .project-link:hover::before {
+      transform: translateX(3px);
+    }
     
     .post {
       margin-bottom: 3rem;
@@ -209,6 +272,10 @@
       .tagline {
         font-size: 1rem;
       }
+
+      .project-card {
+        padding: 1.25rem;
+      }
     }
   </style>
 </head>
@@ -216,7 +283,7 @@
   <div class="container">
     <header>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1>A penguin's library</h1>
+        <h1>Projects</h1>
         <div style="display: flex; align-items: center; gap: 1rem;">
           <button class="theme-toggle" onclick="toggleTheme()">
             <span id="theme-icon">☀️</span>
@@ -227,7 +294,15 @@
     </header>
     
     <main>
-      <p>Nothing's here yet</p>
+      <div id="loading" style="text-align: center; color: var(--secondary-text); padding: 2rem;">
+        Loading projects...
+      </div>
+      <div class="projects-grid" id="projects-container" style="display: none;">
+        <!-- Projects will be loaded here dynamically -->
+      </div>
+      <div id="error" style="display: none; text-align: center; color: var(--secondary-text); padding: 2rem;">
+        Failed to load projects. Please try again later.
+      </div>
     </main>
     
     <script>
@@ -243,13 +318,56 @@
         localStorage.setItem('theme', newTheme);
       }
 
-      // Load saved theme on page load
+      function createProjectCard(project) {
+        return `
+          <div class="project-card">
+            <h3 class="project-title">${project.title}</h3>
+            <p class="project-description">${project.description}</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+              <a href="${project.github}" class="project-link" target="_blank">View on GitHub</a>
+              ${project.demo ? `<a href="${project.demo}" class="project-link" target="_blank" style="opacity: 0.8;">Live Demo</a>` : ''}
+            </div>
+            ${project.technologies ? `
+              <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                ${project.technologies.map(tech => `<span style="background-color: var(--code-bg); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: var(--secondary-text);">${tech}</span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      async function loadProjects() {
+        const loadingEl = document.getElementById('loading');
+        const containerEl = document.getElementById('projects-container');
+        const errorEl = document.getElementById('error');
+        
+        try {
+          const response = await fetch('./projects.json');
+          if (!response.ok) throw new Error('Failed to fetch projects');
+          
+          const data = await response.json();
+          const projectsHtml = data.projects.map(createProjectCard).join('');
+          
+          containerEl.innerHTML = projectsHtml;
+          loadingEl.style.display = 'none';
+          containerEl.style.display = 'grid';
+        } catch (error) {
+          console.error('Error loading projects:', error);
+          loadingEl.style.display = 'none';
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // Load saved theme and projects on page load
       document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         const themeIcon = document.getElementById('theme-icon');
         
         document.body.setAttribute('data-theme', savedTheme);
         themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        
+        // Load projects
+        loadProjects();
       });
     </script>
 
