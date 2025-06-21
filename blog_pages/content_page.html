@@ -4,88 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Penguin's Blog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #fff;
-      --text: #1a1a1a;
-      --muted: #666;
-      --link: #0070f3;
-      --border: #ddd;
-      --code-bg: #f0f0f0;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Rubik', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 2rem 1rem;
-      max-width: 700px;
-      margin: auto;
-    }
-
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .tagline {
-      color: var(--muted);
-      font-size: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    article {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-    }
-
-    footer {
-      font-size: 0.875rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-      margin-top: 3rem;
-    }
-
-    code {
-      font-family: 'Fira Code', monospace;
-      background: var(--code-bg);
-      padding: 0.2em 0.4em;
-      border-radius: 4px;
-      font-size: 0.9em;
-    }
-
-    a {
-      color: var(--link);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/image.png" type="image/x-icon" />
+  <link rel="stylesheet" href="content.css" />
 </head>
 <body>
   <header>
     <h1>So, about {{ title }}</h1>
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+      <p class="tagline" style="margin: 0;">Tagline</p>
+      <span>&middot;</span>
+      <a href="../blog.html">Home</a>
+    </div>
   </header>
 
   <main>
-    <!-- Article tags and code tags will go here -->
 
   </main>
 
   <footer>
-    Built with <code>html</code> and <code>css</code>
+     Disclaimer: all my blogs are static sites generated with the help of Gemini and ChatGPT. 
+     Built with <code>html</code> and <code>css.</code>
   </footer>
 </body>
 </html>

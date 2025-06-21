@@ -2,10 +2,73 @@
   "projects": [
     {
       "title": "CrossOCR",
-      "description": "A lightweight multilingual OCR tool.",
+      "description": "A lightweight multilingual OCR tool for extracting and explaining text.",
       "github": "https://github.com/Rishik00/CrossOCR",
       "technologies": ["Ollama", "Gradio", "Transformers", "PaddleOCR"]
-    }
+    },
+
+    {
+      "title": "NER Annotator",
+      "description": "A recreation of Naamapadam's multilingual dataset annotation system using translation and neural word alignment models.",
+      "github": "https://github.com/Rishik00/NERAnnotate",
+      "technologies": ["typer", "awesome align", "Transformers"]
+    },
+
+    {
+      "title": "PicoGrad (ongoing)",
+      "description": "An autograd engine inspired by Karpathy's MicroGrad, complete with GPU compatibility (Triton/CUDA/HIP).",
+      "github": "https://github.com/A-Penguins-Lab/picograd",
+      "technologies": ["CUDA", "python", "triton", "HIP C++*"]
+    },
+
+    {
+      "title": "Triton Lab (ongoing - casual)",
+      "description": "A collection of CUDA/Triton and HIP (soon to be written) kernels for demo purposes",
+      "github": "https://github.com/Rishik00/TritonLab",
+      "technologies": ["CUDA","triton", "HIP C++*"]
+    },
+
+    {
+      "title": "Jax Lab (ongoing - casual)",
+      "description": "A collection of models/math equations in jax, one of my favourite python libraries.",
+      "github": "https://github.com/Rishik00/JaxLab",
+      "technologies": ["Jax"]
+    },
+
+    {
+      "title": "TreeFormer (undergrad capstone)",
+      "description": "A phishing URL detection ensemble consisting of a Tree and Transformer, paired with detailed analysis of the problem from a geolocation standpoint. ",
+      "github": "https://github.com/Rishik00/PIMP",
+      "technologies": ["CUDA", "python", "triton", "HIP"]
+    }, 
     
+    {
+      "title": "JargonTTS (ongoing)",
+      "description": "A TTS pipeline that was built from the ground up using jargon data from research papers. Model is yet to be trained.",
+      "github": "https://github.com/Rishik00/JargonTTS",
+      "technologies": ["SpeechT5", "python", "librosa", "PyTorch"]
+    },
+
+    {
+      "title": "Base 64 using AVX2",
+      "description": "A vectorizable implementation of the base64 algorithm using AVS2 instructions, done using the reference paper:  https://arxiv.org/abs/1704.00605",
+      "github": "https://github.com/A-Penguins-Lab/avx-b64-re",
+      "technologies": ["C++", "python"]
+    },
+    
+    {
+      "title": "Saradhi AI",
+      "description": "A real time sign language detection app.",
+      "github": "https://github.com/Rishik00/Tekken",
+      "technologies": ["Intel's API", "transformers (huggingface)", "React-native", "FastAPI"]
+    }, 
+
+    {
+      "title": "Attend Ease",
+      "description": "A real time template matching based attendance system using ESP32 CAM and some C.",
+      "github": "https://github.com/Rishik00/AAttendEase",
+      "technologies": ["OpenCV", "ESP32", "C"]
+    }
+
   ]
 }

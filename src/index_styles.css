@@ -76,10 +76,10 @@ body {
 }
 
 .page-container {
-    max-width: 600px;
+    max-width: 670px;
     margin-left: auto; /* Centers the container */
     margin-right: auto; /* Centers the container */
-    padding: 3rem;
+    padding: 2rem;
 }
 
 /* Navigation Bar */

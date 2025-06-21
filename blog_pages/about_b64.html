@@ -4,14 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Penguin's Blog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <link rel="icon" href="/assets/image.png" type="image/x-icon" />
   <link rel="stylesheet" href="content.css" />
 </head>
 <body>
   <header>
     <h1>So, about Base64 (work in progress)</h1>
-    <p class="tagline">And about data representations</p>
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+      <p class="tagline" style="margin: 0;">And about data representations</p>
+      <span>&middot;</span>
+      <a href="../blog.html">Home</a>
+    </div>
+
   </header>
 
   <main>
@@ -32,11 +39,12 @@
       <h2>Why should I care?</h2>
       <article>
       <p>According to  <a href="https://en.wikipedia.org/wiki/Base64">wikipedia</a>: </p>
-      <blockquote>
-        Base64 (also known as tetrasexagesimal) is a group of binary-to-text encoding schemes that transforms binary data into 
+      
+        <p><i>  <b>Base64</b> (also known as tetrasexagesimal) is a group of binary-to-text encoding schemes that transforms binary data into 
         a sequence of printable characters, limited to a set of 64 unique characters. More specifically, the source binary data 
         is taken 6 bits at a time, then this group of 6 bits is mapped to one of 64 unique characters.
-      </blockquote>   
+        </i></p>
+
       </article>
 
       <article>

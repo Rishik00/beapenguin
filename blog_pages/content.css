@@ -1,7 +1,7 @@
 :root {
     --text: #fff;
     --bg: #1a1a1a;
-    --muted: #666;
+    --muted: #ddd;
     --link: #0070f3;
     --border: #ddd;
     --code-bg: #f0f0f0;
@@ -14,7 +14,7 @@
 }
 
 body {
-    font-family: 'Rubik', sans-serif;
+    font-family: "Playfair Display", serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
@@ -25,7 +25,7 @@ body {
 
 h1 {
     font-size: 1.75rem;
-    font-weight: 600;
+    font-weight: 1600;
     margin-bottom: 0.5rem;
 }
 
@@ -53,8 +53,8 @@ footer {
 
 code {
     background: var(--code-bg);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
+    padding: 0.1em 0.1em;
+    border-radius: 2px;
     font-family: 'Fira Code', monospace;
     font-size: 0.95em;
     color: #333;
