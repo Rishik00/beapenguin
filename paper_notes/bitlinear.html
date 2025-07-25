@@ -14,13 +14,93 @@
   <header>
     <h1>BitLinear</h1>
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-      <p class="tagline" style="margin: 0;">Link: </p>
+      <p class="tagline" style="margin: 0;"><a href="https://arxiv.org/pdf/2402.17764">Link</a></p>
       <span>&middot;</span>
       <a href="../blog.html">Home</a>
     </div>
   </header>
 
   <main>
+
+    <!-- <section>
+      <h2>Much floats, too precision</h2>
+      <article>
+        <p>
+          There are many reasons why deep learning fascinates me. Though the concept of a black box giving me relationship advice 
+          really piques my curiosity; The main reason is that a single operation is at the heart of it: 
+
+          <b>A matrix of decimals (also called as floating point numbers) multiplied by the transpose of another matrix.</b> Also mathematically represented by: 
+        </p>
+      </article>
+
+      <article>
+        <p>
+            But this poses a fundamental problem when we scale these models to unbelievably large scales (sound familiar?). Floating point numbers are 
+            expensive, both in terms of load/store operations and even compute operations. Performing matrix multiplications of billions of matrices
+            in precisions like FP32 can quickly eat up precious VRAM and compute must be done upto 24 bit decimal part every time, which is expensive when done 
+            at the scale of models like 1B or even 20B. 
+        </p>
+
+        <p>
+          Quantization solves this problem to an extent, by reducing the effective range of the tensors we can signifincatly bring the compute and memory costs down.
+          At this point it feels like papers like BitLinear (Link) are just trying to flex how much we can quantize, because 1-bit quantization sounded like a pipe dream to me 
+          (Until I read their results, and tried implemnting a basic version of it)
+        </p>
+      </article>
+    </section> -->
+
+    <section>
+      <h2>The 1-bit pipe dream</h2>
+      <article>
+        <p>
+            Transformer blocks are effectively really fancy affine transformations (applied with non-linearity) paired with a module that can compute feature interactions (attention)
+            and a way to normalize the results (LayerNorm). While many attempts have been made to optimize these operations to maximize throughput (my lovely <b>FlashAttention</b>). The 
+            only real way to optimize the linear networks is to quantize the weights. The extent to which you can do this upto is 8-bits (INT8) at which point you will lose a lot of 
+            performance
+        </p>
+      </article>
+
+      <article>
+        <p>
+          BitLinear ackowledges this trade-off and takes the quantization down to a single bit. The core equation to bitlinear is the following: 
+          <img src="assets/image.png" alt="BitLinear Equation">
+          
+          <!-- The first question I got after reading this was: wait, doesnt a computer represent an integer using 4-bits/8bits?  -->
+        </p>
+
+        <p>Yes, thats it. BitLinear is a bunch of affine transformations applied to a matrix (who would've thought). In all seriousness, the next few subsections will break this equation down and try
+          implementing it.</p>
+      </article>
+
+    </section>
+
+    <section>
+      <h2>Lowering the precision, and our expectations</h2>
+
+      <article>
+        <p>
+           Quantization is the process of lowering the bit precision to improve speeds and reduce memory consumption. I don't want to go too in depth about it, so readers can go through 
+           <a href="https://docs.pytorch.org/docs/stable/quantization.html">pytorch docs</a> and this <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-quantization">amazing article by Maarten Grootendorst</a> to familiarze themselves with its concepts.
+           What I will be doing is talk about its tradeoffs and go over absmax quantization, that was implemented in BitLinear. 
+        </p>
+      </article>
+
+
+      <article>
+        <p>
+          Basically, every floating point number (FP32 for example) can be represented using three parts: Sign (1-bit), Exponent (8-bits), and Mantissa (23-bits). When we want to quantize this, we want to reduce the number of bits (effectively the range) for the exponent and mantissa, which would 
+          lead to lower precision numbers. FP32 can be quantized down to FP16 (5-bit exponent, 10-bit mantissa) INT8 and INT4. While the reduced number of bits means the overall model size will go down (not the number of parameters, but the amount of storage each parameter occupies in memory). 
+        </p>
+      </article>
+
+      <article>
+        <p>
+          There are different types of quantization as well, that are applied during the different phases of the machine learning life-cycle. <b>Quantization Aware Training</b> is performed during training, meaning the models weights are actually aware that they're being quantized; whereas <b>Post Training Quantization</b>
+          is applied after training (but to only a specific set of layers, check pytorch docs for further info). For BitLinear the authors chose to use QAT as it gives them more flexibility to experiment. 
+        </p>
+      </article>
+
+    </section>
 
   </main>
 

@@ -12,318 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #ffffff;
-      --accent-color: #3b82f6;
-      --background-color: #0a0a0a;
-      --card-bg: #111111;
-      --card-hover-bg: #161616;
-      --text-color: #e5e5e5;
-      --secondary-text: #a1a1aa;
-      --border-color: #27272a;
-      --code-bg: #1c1c1c;
-      --shadow-color: rgba(59, 130, 246, 0.15);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: "Playfair Display", serif;
-      background-color: var(--background-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      font-size: 16px;
-      font-weight: 400;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-
-    header {
-      padding: 4rem 0 2rem;
-      text-align: left;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: var(--primary-color);
-      margin-bottom: 0.5rem;
-    }
-
-    .tagline {
-      font-size: 1.1rem;
-      color: var(--secondary-text);
-      font-weight: 400;
-      margin-bottom: 2rem;
-    }
-
-    nav {
-      margin-top: 2rem;
-      border-top: 1px solid var(--border-color);
-      padding-top: 1rem;
-    }
-
-    .nav-link {
-      color: var(--text-color);
-      text-decoration: none;
-      font-size: 1.25rem;
-      font-weight: 500;
-      margin-right: 1.5rem;
-      letter-spacing: 0.3px;
-      transition: color 0.2s ease;
-      display: inline-block;
-      padding: 0.25rem 0;
-    }
-
-    .nav-link:hover {
-      color: var(--accent-color);
-    }
-
-    .active {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
-
-    main {
-      padding: 1rem 0 4rem;
-    }
-
-    /* Section Navigation */
-    .section-nav {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 0;
-    }
-
-    .section-link {
-      color: var(--secondary-text);
-      text-decoration: none;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px 6px 0 0;
-      transition: all 0.2s ease;
-      border-bottom: 2px solid transparent;
-      position: relative;
-    }
-
-    .section-link:hover {
-      color: var(--text-color);
-      background-color: var(--card-bg);
-    }
-
-    .section-link.active {
-      color: var(--accent-color);
-      border-bottom-color: var(--accent-color);
-      background-color: var(--card-bg);
-    }
-
-    /* Content Sections */
-    .content-section {
-      display: none;
-    }
-
-    .content-section.active {
-      display: block;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem 2rem;
-      color: var(--secondary-text);
-      background-color: var(--card-bg);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    .empty-state p {
-      font-size: 1rem;
-      font-style: italic;
-    }
-
-    .post {
-      margin-bottom: 3rem;
-      padding: 1.5rem;
-      border-bottom: 1px solid var(--border-color);
-      transition: all 0.3s ease;
-      background-color: var(--card-bg);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    .post:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px var(--shadow-color);
-      background-color: var(--card-hover-bg);
-      border-color: var(--accent-color);
-    }
-
-    .post:last-child {
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .post-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: var(--primary-color);
-      letter-spacing: -0.3px;
-    }
-
-    .post-title a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .post-title a:hover {
-      color: var(--accent-color);
-    }
-
-    .post-meta {
-      font-size: 0.85rem;
-      color: var(--secondary-text);
-      margin-bottom: 1rem;
-      font-family: 'Fira Code', monospace;
-    }
-
-    .post-excerpt {
-      margin-bottom: 1rem;
-      color: var(--text-color);
-    }
-
-    .read-more {
-      font-size: 0.9rem;
-      color: var(--accent-color);
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      transition: all 0.2s ease;
-    }
-
-    .read-more:hover {
-      color: #60a5fa;
-    }
-
-    .read-more:after {
-      content: "→";
-      margin-left: 4px;
-      transition: transform 0.2s ease;
-    }
-
-    .read-more:hover:after {
-      transform: translateX(4px);
-    }
-
-    code {
-      font-family: 'Fira Code', monospace;
-      background-color: var(--code-bg);
-      color: #93c5fd;
-      padding: 0.2em 0.4em;
-      border-radius: 4px;
-      font-size: 0.85em;
-      border: 1px solid var(--border-color);
-    }
-
-    footer {
-      padding: 2rem 0;
-      color: var(--secondary-text);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border-color);
-    }
-
-    /* Header top section styling */
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 2px solid var(--border-color);
-      object-fit: cover;
-      transition: border-color 0.2s ease;
-    }
-
-    .avatar:hover {
-      border-color: var(--accent-color);
-    }
-
-    .site-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--primary-color);
-      margin: 0;
-    }
-
-    .header-nav {
-      font-size: 1rem;
-      color: var(--text-color);
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      border: 1px solid transparent;
-    }
-
-    .header-nav:hover {
-      color: var(--accent-color);
-      background-color: var(--card-bg);
-      border-color: var(--border-color);
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        padding: 1.5rem 1rem;
-      }
-
-      header {
-        padding: 2.5rem 0 1.5rem;
-      }
-
-      h1 {
-        font-size: 1.75rem;
-      }
-
-      .tagline {
-        font-size: 1rem;
-      }
-
-      .header-top {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-      }
-
-      .post {
-        padding: 1.25rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="blog.css" />
 </head>
 
 <body>
@@ -344,8 +33,7 @@
 
     <header>
       <h1>Hi, penguin here</h1>
-      <p class="tagline">Thank you for taking your time to open this page, currently its under works.
-      </p>
+      <p>Thanks for visiting. Let's just avoid our job titles and achievements here and just explore computers for what they are. :)</p>
     </header>
 
     <!-- Section Navigation -->
@@ -356,57 +44,10 @@
 
     <main>
       <!-- So Section -->
-      <section id="so" class="content-section active">
-        <article class="post">
-          <h2 class="post-title">
-            <a href="blog_pages/about_b64.html">
-              <span style="font-weight:500; color:var(--secondary-text);">
-                2025/05/16 -
-              </span>
-              So, about Base64
-            </a>
-          </h2>
-          <p class="post-excerpt">
-            And how strings are represented
-          </p>
-          <a href="blog_pages/about_b64.html" class="read-more">Continue reading</a>
-        </article>
+      <section id="so" class="content-section active"></section>
 
-        <article class="post">
-          <h2 class="post-title">
-            <a href="blog_pages/about_convolutions.html">
-              <span style="font-weight:500; color:var(--secondary-text);">
-                (Not started)
-              </span>
-              So, about Convolutions
-            </a>
-          </h2>
-          <p class="post-excerpt">
-            And images
-          </p>
-          <a href="blog_pages/about_convolutions.html" class="read-more">Continue reading</a>
-        </article>
-
-
-      </section>
-
-      <!-- Paper Notes Section -->
-      <section id="paper-notes" class="content-section">
-        <article class="post">
-          <h2 class="post-title">
-            <a href="paper_notes/bitlinear.html">
-              <span style="font-weight:500; color:var(--secondary-text);">
-                (Out this week)
-             </span>
-             BitLinear
-            </a>
-          </h2>
-          <p class="post-excerpt">
-          </p>
-          <a href="paper_notes/bitlinear.html" class="read-more">Continue reading</a>
-        </article>
-
-      </section>
+      <!-- Placeholder section -->
+      <section id="paper-notes" class="content-section"></section>
 
     </main>
 
@@ -414,8 +55,9 @@
       Built with <code>html</code> and <code>css</code>
     </footer>
   </div>
+</body>
 
-  <script>
+<script>
     // Section navigation functionality
     document.addEventListener('DOMContentLoaded', function () {
       const sectionLinks = document.querySelectorAll('.section-link');
@@ -441,6 +83,77 @@
       });
     });
   </script>
-</body>
+
+  <script>
+    fetch('blog.json')
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to load JSON");
+        return response.json();
+      })
+      .then(papers => {
+        const container = document.getElementById("so");
+
+        papers.forEach(paper => {
+          const article = document.createElement("article");
+          article.className = "post";
+
+          article.innerHTML = `
+            <h2 class="post-title">
+              <a href="paper_notes/${paper.slug}.html">
+                <span style="font-weight:500; color:var(--secondary-text);">
+                  ${paper.status ? `(${paper.status})` : ""}
+                </span>
+                ${paper.title}
+              </a>
+            </h2>
+            <p class="post-excerpt"></p>
+            <a href="paper_notes/${paper.slug}.html" class="read-more">Continue reading</a>
+          `;
+
+          container.appendChild(article);
+        });
+      })
+      .catch(error => {
+        console.error("Error loading blog.json:", error);
+      });
+  </script>
+
+<script>
+  fetch('paper_notes/paper_notes.json')
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to load JSON");
+      return response.json();
+    })
+    .then(posts => {
+      const container = document.getElementById("paper-notes");
+
+      posts.forEach(post => {
+        const article = document.createElement("article");
+        article.className = "post";
+
+        article.innerHTML = `
+          <h2 class="post-title">
+            <a href="blog_pages/${post.slug}.html">
+              <span style="font-weight:500; color:var(--secondary-text);">
+                ${post.status ? `(${post.status})` : post.date + " -"}
+              </span>
+              ${post.title}
+            </a>
+          </h2>
+          <p class="post-excerpt">
+            ${post.excerpt || ""}
+          </p>
+          <a href="blog_pages/${post.slug}.html" class="read-more">Continue reading</a>
+        `;
+
+        container.appendChild(article);
+      });
+    })
+    .catch(error => {
+      console.error("Error loading blog.json:", error);
+    });
+</script>
+
+
 
 </html>

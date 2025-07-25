@@ -35,6 +35,14 @@ h1 {
     margin-bottom: 2rem;
 }
 
+img {
+    max-width: 50%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
 article {
     padding-bottom: 1.5rem;
 }

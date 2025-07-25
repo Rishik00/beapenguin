@@ -1,0 +1,14 @@
+[
+  {
+    "title": "So, about Base64",
+    "slug": "about_b64",
+    "date": "2025/05/16",
+    "excerpt": "And how strings are represented"
+  },
+  {
+    "title": "So, about Convolutions",
+    "slug": "about_convolutions",
+    "status": "Not started",
+    "excerpt": "And images"
+  }
+]
