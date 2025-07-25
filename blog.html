@@ -84,39 +84,49 @@
     });
   </script>
 
-  <script>
-    fetch('blog.json')
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to load JSON");
-        return response.json();
-      })
-      .then(papers => {
-        const container = document.getElementById("so");
+<script>
+  fetch('blog.json')
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to load JSON");
+      return response.json();
+    })
+    .then(papers => {
+      const container = document.getElementById("so");
 
-        papers.forEach(paper => {
-          const article = document.createElement("article");
-          article.className = "post";
+      papers.forEach(paper => {
+        const article = document.createElement("article");
+        article.className = "post";
 
-          article.innerHTML = `
-            <h2 class="post-title">
-              <a href="paper_notes/${paper.slug}.html">
-                <span style="font-weight:500; color:var(--secondary-text);">
-                  ${paper.status ? `(${paper.status})` : ""}
-                </span>
-                ${paper.title}
-              </a>
-            </h2>
-            <p class="post-excerpt"></p>
-            <a href="paper_notes/${paper.slug}.html" class="read-more">Continue reading</a>
-          `;
+        // Decide whether to show (status) or date -
+        const metaText = paper.status 
+          ? `(${paper.status})`
+          : paper.date 
+            ? `${paper.date} -`
+            : "";
 
-          container.appendChild(article);
-        });
-      })
-      .catch(error => {
-        console.error("Error loading blog.json:", error);
+        article.innerHTML = `
+          <h2 class="post-title">
+            <a href="blog_pages/${paper.slug}.html">
+              <span style="font-weight:500; color:var(--secondary-text);">
+                ${metaText}
+              </span>
+              ${paper.title}
+            </a>
+          </h2>
+          <p class="post-excerpt">
+            ${paper.excerpt || ""}
+          </p>
+          <a href="blog_pages/${paper.slug}.html" class="read-more">Continue reading →</a>
+        `;
+
+        container.appendChild(article);
       });
-  </script>
+    })
+    .catch(error => {
+      console.error("Error loading blog.json:", error);
+    });
+</script>
+
 
 <script>
   fetch('paper_notes/paper_notes.json')
