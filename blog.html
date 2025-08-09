@@ -12,11 +12,10 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="blog.css" />
+  <link rel="stylesheet" href="blog.css">
 </head>
 
 <body>
-
   <div class="container">
     <div class="header-top">
       <!-- Left: Avatar + Title -->
@@ -32,15 +31,44 @@
     </div>
 
     <header>
-      <h1>Hi, penguin here</h1>
-      <p>Thanks for visiting. Let's just avoid our job titles and achievements here and just explore computers for what they are. :)</p>
+      <div>
+        <h1>Hi, penguin here</h1>
+      </div>
+
+      <p>
+        Thanks for visiting. Let's just avoid our job titles and achievements here 
+        and just explore computers for what they are. :)
+      </p>
     </header>
 
-    <!-- Section Navigation -->
-    <nav class="section-nav">
-      <a href="#so" class="section-link active" data-section="so">About Something</a>
-      <a href="#paper-notes" class="section-link" data-section="paper-notes">Paper Notes</a>
-    </nav>
+        <!-- Dropdown Navigation -->
+        <nav class="dropdown-nav" aria-label="Main Navigation">
+          <div class="dropdown" id="sectionDropdown">
+            <button 
+              class="dropdown-toggle" 
+              id="dropdownToggle" 
+              aria-haspopup="true" 
+              aria-expanded="false"
+            >
+              <span id="selectedSection">About Something</span>
+              <span class="dropdown-arrow" aria-hidden="true">▼</span>
+            </button>
+
+            <div class="dropdown-menu" id="dropdownMenu" role="menu">
+              <button class="dropdown-item active" data-section="so" role="menuitem">
+                About Something
+              </button>
+              <button class="dropdown-item" data-section="paper-notes" role="menuitem">
+                Paper Notes
+              </button>
+
+              <button class="dropdown-item" data-section="mind-nuggests" role="menuitem">
+                Mind Nuggets
+              </button>
+            </div>
+          </div>
+        </nav>
+
 
     <main>
       <!-- So Section -->
@@ -58,31 +86,60 @@
 </body>
 
 <script>
-    // Section navigation functionality
-    document.addEventListener('DOMContentLoaded', function () {
-      const sectionLinks = document.querySelectorAll('.section-link');
-      const contentSections = document.querySelectorAll('.content-section');
+  // Dropdown functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.getElementById('sectionDropdown');
+    const dropdownToggle = document.getElementById('dropdownToggle');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const selectedSection = document.getElementById('selectedSection');
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const contentSections = document.querySelectorAll('.content-section');
 
-      sectionLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
+    // Toggle dropdown
+    dropdownToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
 
-          // Remove active class from all links and sections
-          sectionLinks.forEach(l => l.classList.remove('active'));
-          contentSections.forEach(s => s.classList.remove('active'));
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
 
-          // Add active class to clicked link
-          this.classList.add('active');
+    // Handle dropdown item selection
+    dropdownItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // Remove active class from all items
+        dropdownItems.forEach(i => i.classList.remove('active'));
+        contentSections.forEach(s => s.classList.remove('active'));
 
-          // Show corresponding section
-          const targetSection = document.getElementById(this.dataset.section);
-          if (targetSection) {
-            targetSection.classList.add('active');
-          }
-        });
+        // Add active class to selected item
+        this.classList.add('active');
+
+        // Update selected section text
+        selectedSection.textContent = this.textContent;
+
+        // Show corresponding section
+        const targetSection = document.getElementById(this.dataset.section);
+        if (targetSection) {
+          targetSection.classList.add('active');
+        }
+
+        // Close dropdown
+        dropdown.classList.remove('open');
       });
     });
-  </script>
+
+    // Close dropdown on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+  });
+</script>
 
 <script>
   fetch('blog.json')
@@ -116,7 +173,7 @@
           <p class="post-excerpt">
             ${paper.excerpt || ""}
           </p>
-          <a href="blog_pages/${paper.slug}.html" class="read-more">Continue reading →</a>
+          <a href="blog_pages/${paper.slug}.html" class="read-more">Continue reading </a>
         `;
 
         container.appendChild(article);
@@ -126,7 +183,6 @@
       console.error("Error loading blog.json:", error);
     });
 </script>
-
 
 <script>
   fetch('paper_notes/paper_notes.json')
@@ -160,7 +216,7 @@
       });
     })
     .catch(error => {
-      console.error("Error loading blog.json:", error);
+      console.error("Error loading paper_notes.json:", error);
     });
 </script>
 

@@ -1,80 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/assets/image.png" type="image/x-icon" />
-    <title>A Pestering Penguin</title>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguin's Space</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="src/index_styles.css" />
-  </head>
-  
-  <body>
-    <header class="fade-in delay-1">
-        <nav>
-            <img src="assets/download.jfif" alt="" class="profile-pic" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
-            <a href="/blog.html">Blog</a>
-            <!-- <a href="/library_pages/library_page.html">Library</a> -->
-            <a href="/library_pages/projects_page.html">Projects</a>
-        </nav>
-    </header>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
-    <div class="page-container fade-in delay-2">
-        <section class="intro-section" id="home">
-            <div class="intro-text">
-                <h1>Hi, Rishikesh this side!</h1>
-                <p>I really love reading textbooks and research papers, writing about them and implementing them. Because to me, code and mathematics are the best language to understand about a problem.</p>
+    <link rel="stylesheet" href="src/index_styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-left">
+                    <img src="assets/download.jfif" alt="Profile" class="avatar">
+                    <span class="site-name">A Mostly Sane Penguin</span>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="/blog.html" class="nav-link">Blog</a>
+                    <a href="/library_pages/projects_page.html" class="nav-link">Projects</a>
+
+                    <a href="https://github.com/Rishik00" class="nav-link">
+                        Github
+                    </a>
+                    <a href="https://linkedin.com/in/rishikesh-mallagundla" class="nav-link">
+                        Linkedin
+                    </a>
+                    <a href="https://x.com/_notapenguin" class="nav-link">
+                        Twitter
+                    </a>
+                </div>
             </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Hi, Rishikesh here!</h1>
+            <p class="tagline">Homo sapien</p>
+
+            <p class="hero-description">
+                After four years in a Computer Science degree (which did nothing for my career btw), I realised I like computers.  
+                That led me into building and researching <strong>Machine Learning</strong> and <strong>Low-Level Systems</strong>.  
+            </p>
+
+            <p class="hero-description">
+                Oppenheimer once said, <em>“If I can combine physics and New Mexico, my life would be ideal.”</em>  
+                For me, it’s: <em>“If I can combine Robotics, Reinforcement Learning, Topology, and Deep Learning, I’ll be very happy.”</em>
+            </p>
+
+            <p class="hero-description">
+                Feel free to check out my work. If you want to collaborate or just nerd out about anything, 
+                <a href="mailto:rishikesh@example.com" class="social-link">please email me</a>.
+            </p>
+
         </section>
+
+        <!-- Content Grid -->
+        <!-- <div class="content-grid">
+            <div class="main-content">
+                <section class="section">
+                    <h2 class="section-title">
+                        <span class="section-icon">📝</span>
+                        Latest Writing
+                    </h2>
+                    <div class="blog-post">
+                        <h3 class="blog-post-title">
+                            <a href="#">Understanding Transformer Architecture</a>
+                        </h3>
+                        <p class="blog-post-excerpt">
+                            A deep dive into the mathematical foundations of transformers, exploring attention mechanisms, 
+                            positional encodings, and the role of layer normalization in modern NLP models.
+                        </p>
+                        <div class="blog-post-meta">
+                            <span>3 days ago</span>
+                            <a href="#" class="read-more">Continue reading →</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <h2 class="section-title">
+                        <span class="section-icon">🛠️</span>
+                        Recent Projects
+                    </h2>
+                    <div class="project-item">
+                        <h3 class="project-title">
+                            <a href="#">Neural ODE Implementation</a>
+                        </h3>
+                        <p class="project-description">
+                            Clean implementation of Neural Ordinary Differential Equations from scratch, with detailed mathematical derivations and comparison to standard architectures.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">NumPy</span>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <h3 class="project-title">
+                            <a href="#">Variational Inference Library</a>
+                        </h3>
+                        <p class="project-description">
+                            A minimal library for variational inference with clear implementations of ELBO optimization and various approximate posterior families.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">JAX</span>
+                            <span class="tech-tag">Statistics</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div> -->
     </div>
 
+</body>
 
-
-    <div class="bottom-nav">
-        <a href="https://github.com/Rishik00" target="_blank" rel="noopener noreferrer" class="github">
-            <span class="bottom-nav-tooltip">GitHub</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-            </svg>
-        </a>
-        <a href="https://linkedin.com/in/rishikesh-mallagundla" target="_blank" rel="noopener noreferrer" class="linkedin">
-            <span class="bottom-nav-tooltip">LinkedIn</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-            <rect x="2" y="9" width="4" height="12"></rect>
-            <circle cx="4" cy="4" r="2"></circle>
-            </svg>
-        </a>
-
-
-        <a href="https://drive.google.com/file/d/1NPZfbVDsNA3XmUTNSdJ6EsjPfK75J5Eg/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="resume">
-            <span class="bottom-nav-tooltip">Resume</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-        </a>
-
-        <button id="darkModeButton" aria-label="Toggle dark mode">
-             <span class="bottom-nav-tooltip">Dark Mode</span>
-             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                 <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path>
-             </svg>
-         </button>
-         <a href="https://x.com/_notapenguin" target="_blank" rel="noopener noreferrer" class="twitter">
-            <span class="bottom-nav-tooltip">Twitter</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43 1a9 9 0 0 1-2.85 1.09A4.48 4.48 0 0 0 16.5 0c-2.5 0-4.5 2-4.5 4.5 0 .35.04.7.11 1.03A12.94 12.94 0 0 1 3 1.6 4.48 4.48 0 0 0 2.88 4.1c0 1.56.8 2.93 2 3.74A4.52 4.52 0 0 1 2 7.15v.05c0 2.18 1.55 4 3.61 4.42A4.52 4.52 0 0 1 3 11.5a4.48 4.48 0 0 0 4.2 3.12A9 9 0 0 1 1 18.5a12.94 12.94 0 0 0 7 2"></path>
-            </svg>
-        </a>
-    </div>
-
-    <script src="src/script.js"></script>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-  </body>
 </html>
