@@ -30,7 +30,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -108,7 +108,7 @@ body {
 /* Hero Section */
 .hero {
     text-align: start;
-    max-width: 750px;
+    max-width: 770px;
     margin: 0 auto;
     padding: 50px 10px;
 }
