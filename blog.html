@@ -111,23 +111,17 @@
     // Handle dropdown item selection
     dropdownItems.forEach(item => {
       item.addEventListener('click', function() {
-        // Remove active class from all items
         dropdownItems.forEach(i => i.classList.remove('active'));
         contentSections.forEach(s => s.classList.remove('active'));
 
-        // Add active class to selected item
         this.classList.add('active');
-
-        // Update selected section text
         selectedSection.textContent = this.textContent;
 
-        // Show corresponding section
         const targetSection = document.getElementById(this.dataset.section);
         if (targetSection) {
           targetSection.classList.add('active');
         }
 
-        // Close dropdown
         dropdown.classList.remove('open');
       });
     });
@@ -154,7 +148,6 @@
         const article = document.createElement("article");
         article.className = "post";
 
-        // Decide whether to show (status) or date -
         const metaText = paper.status 
           ? `(${paper.status})`
           : paper.date 
@@ -163,7 +156,7 @@
 
         article.innerHTML = `
           <h2 class="post-title">
-            <a href="blog_pages/${paper.slug}.html">
+            <a href="${paper.slug}">
               <span style="font-weight:500; color:var(--secondary-text);">
                 ${metaText}
               </span>
@@ -173,7 +166,7 @@
           <p class="post-excerpt">
             ${paper.excerpt || ""}
           </p>
-          <a href="blog_pages/${paper.slug}.html" class="read-more">Continue reading </a>
+          <a href="${paper.slug}" class="read-more">Continue reading</a>
         `;
 
         container.appendChild(article);
@@ -197,11 +190,17 @@
         const article = document.createElement("article");
         article.className = "post";
 
+        const metaText = post.status 
+          ? `(${post.status})`
+          : post.date 
+            ? `${post.date} -`
+            : "";
+
         article.innerHTML = `
           <h2 class="post-title">
-            <a href="blog_pages/${post.slug}.html">
+            <a href="${post.slug}">
               <span style="font-weight:500; color:var(--secondary-text);">
-                ${post.status ? `(${post.status})` : post.date + " -"}
+                ${metaText}
               </span>
               ${post.title}
             </a>
@@ -209,7 +208,7 @@
           <p class="post-excerpt">
             ${post.excerpt || ""}
           </p>
-          <a href="blog_pages/${post.slug}.html" class="read-more">Continue reading</a>
+          <a href="blog_pages/${post.slug}" class="read-more">Continue reading</a>
         `;
 
         container.appendChild(article);
@@ -219,6 +218,7 @@
       console.error("Error loading paper_notes.json:", error);
     });
 </script>
+
 
 
 
