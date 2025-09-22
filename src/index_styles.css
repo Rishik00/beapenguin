@@ -75,7 +75,7 @@ body {
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
 }
 
@@ -84,26 +84,60 @@ body {
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
-    transition: color 0.2s ease;
+    transition: all 0.3s ease;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
 }
 
-.nav-link:hover {
-    color: var(--primary-color);
+/* Striped Hover Effect → only line */
+.nav-link {
+    position: relative;
+    text-decoration: none; /* remove default underline */
+    color: inherit;
 }
 
-.social-links {
-    display: flex;
-    gap: 1rem;
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px; /* thickness of the line */
+    width: 0;
+    background-color: currentColor; /* matches text color */
+    transition: width 0.3s ease;
 }
+
+.nav-link:hover::after {
+    width: 100%; /* line expands fully on hover */
+}
+
 
 .social-link {
     color: var(--secondary-text);
-    transition: color 0.2s ease;
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.5) 25%,
+        rgba(255,255,255,1.5) 50%,
+        rgba(255,255,255,0.5) 75%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shineDiagonal 4s ease-in-out infinite; /* slower sweep */
 }
 
-.social-link:hover {
-    color: var(--secondary-text);
+/* Shiny sweep with long pause */
+@keyframes shineDiagonal {
+    0%   { background-position: 200% 200%; }
+    35%  { background-position: -100% -100%; } /* sweep happens */
+    95% { background-position: -100% -100%; } /* pause for the rest */
 }
+
 
 /* Hero Section */
 .hero {
@@ -119,18 +153,38 @@ body {
     margin-bottom: 5px; /* Less gap before tagline */
 }
 
-.hero .tagline {
+.tagline {
     font-size: 1.2rem;
-    color: #777;
-    margin-bottom: 20px; /* Reduced from big default spacing */
+    font-weight: 500;
+    color: var(--secondary-text);
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.5) 25%,
+        rgba(255,255,255,1.5) 50%,   /* brighter core */
+        rgba(255,255,255,0.5) 75%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shineDiagonal 5s ease-in-out infinite;
 }
+
+/* Shiny sweep with pause */
+@keyframes shineDiagonal {
+    0%   { background-position: 200% 200%; }
+    25%  { background-position: -100% -100%; } /* fast sweep */
+    100% { background-position: -100% -100%; } /* long pause */
+}
+
 
 .hero-description {
     font-size: 1.08em;
-    line-height: 1.6;
+    line-height: 2;
     margin-bottom: 18px; /* Adds space between hero-description paragraphs */
 }
-
 
 /* Grid Layout */
 .content-grid {
@@ -304,8 +358,6 @@ body {
   }
 }
 
-
-
 /* Responsive */
 @media (max-width: 768px) {
     .container {
@@ -348,4 +400,27 @@ body {
     .section {
         padding: 1rem;
     }
+}
+
+/* Special for "my work" link */
+#work-link {
+    position: relative;
+    text-decoration: none; /* remove default underline */
+    color: inherit;
+}
+
+/* Create the line on hover using a pseudo-element */
+#work-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px; /* thickness of the line */
+    width: 0;
+    background-color: currentColor; /* matches text color */
+    transition: width 0.3s ease;
+}
+
+#work-link:hover::after {
+    width: 100%; /* line expands fully on hover */
 }

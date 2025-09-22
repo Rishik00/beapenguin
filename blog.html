@@ -6,220 +6,138 @@
   <link rel="icon" href="/assets/image.png" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Penguin's Blog</title>
-  <!-- Tech-inspired, highly readable fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="blog.css">
+
+    <link rel="stylesheet" href="blog.css">
 </head>
 
 <body>
   <div class="container">
     <div class="header-top">
-      <!-- Left: Avatar + Title -->
       <div class="header-left">
         <img src="/assets/download.jfif" alt="Penguin Avatar" class="avatar" />
-        <h2 class="site-title">A penguin's titles</h2>
+        <h2 class="site-title">A penguin's silent scribbles</h2>
       </div>
-
-      <!-- Right: Home link -->
       <div>
         <a href="/index.html" class="header-nav">Home</a>
       </div>
     </div>
 
-    <header>
-      <div>
-        <h1>Hi, penguin here</h1>
-      </div>
-
-      <p>
-        Thanks for visiting. Let's just avoid our job titles and achievements here 
-        and just explore computers for what they are. :)
-      </p>
-    </header>
-
-        <!-- Dropdown Navigation -->
-        <nav class="dropdown-nav" aria-label="Main Navigation">
-          <div class="dropdown" id="sectionDropdown">
-            <button 
-              class="dropdown-toggle" 
-              id="dropdownToggle" 
-              aria-haspopup="true" 
-              aria-expanded="false"
-            >
-              <span id="selectedSection">About Something</span>
-              <span class="dropdown-arrow" aria-hidden="true">▼</span>
-            </button>
-
-            <div class="dropdown-menu" id="dropdownMenu" role="menu">
-              <button class="dropdown-item active" data-section="so" role="menuitem">
-                About Something
-              </button>
-              <button class="dropdown-item" data-section="paper-notes" role="menuitem">
-                Paper Notes
-              </button>
-
-              <button class="dropdown-item" data-section="mind-nuggests" role="menuitem">
-                Mind Nuggets
-              </button>
-            </div>
-          </div>
-        </nav>
-
+    <nav class="selector" aria-label="Main Navigation">
+      <button class="selector-button active" data-section="so">About Something</button>
+      <button class="selector-button" data-section="paper-notes">Paper Notes</button>
+      <button class="selector-button" data-section="mostly-sane-takes">Mostly Sane Takes</button>
+      <button class="selector-button" data-section="weekly-press">Weekly Press</button>
+    </nav>
 
     <main>
-      <!-- So Section -->
       <section id="so" class="content-section active"></section>
-
-      <!-- Placeholder section -->
       <section id="paper-notes" class="content-section"></section>
-
+      <section id="mostly-sane-takes" class="content-section"></section>
+      <section id="weekly-press" class="content-section"></section>
     </main>
 
     <footer>
       Built with <code>html</code> and <code>css</code>
     </footer>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('.selector-button');
+      const contentSections = document.querySelectorAll('.content-section');
+
+      // Load initial content
+      loadContent('so', document.querySelector('.selector-button[data-section="so"]'));
+
+      buttons.forEach(button => {
+        button.addEventListener('click', function () {
+          buttons.forEach(b => b.classList.remove('active'));
+          contentSections.forEach(s => {
+            s.classList.remove('active');
+            s.classList.add('loading');
+          });
+
+          this.classList.add('active');
+          const sectionId = this.dataset.section;
+          loadContent(sectionId, this);
+
+          const targetSection = document.getElementById(sectionId);
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      function loadContent(sectionId, button) {
+        const container = document.getElementById(sectionId);
+        const jsonPath = getJsonPath(sectionId);
+
+        container.innerHTML = '';
+        container.classList.add('loading');
+
+        fetch(jsonPath)
+          .then(response => {
+            if (!response.ok) throw new Error('Failed to load JSON');
+            return response.json();
+          })
+          .then(posts => {
+            container.classList.remove('loading');
+            container.classList.add('active');
+            container.innerHTML = '';
+
+            posts.forEach((post, index) => {
+              const article = document.createElement('article');
+              article.className = 'post';
+              const metaText = post.status
+                ? `(${post.status})`
+                : post.date
+                  ? `${post.date} -`
+                  : '';
+
+              article.innerHTML = `
+                <h2 class="post-title">
+                  <a href="${post.slug}">
+                    <span style="font-weight:500; color:var(--secondary-text);">
+                      ${metaText}
+                    </span>
+                    ${post.title}
+                  </a>
+                </h2>
+                <p class="post-excerpt">
+                  ${post.excerpt || ''}
+                </p>
+                <a href="${post.slug}" class="read-more">Continue reading</a>
+              `;
+
+              container.appendChild(article);
+
+              // Trigger animation with delay for sequential effect
+              setTimeout(() => {
+                article.classList.add('active');
+              }, index * 100);
+            });
+          })
+          .catch(error => {
+            console.error(`Error loading ${jsonPath}:`, error);
+            container.classList.remove('loading');
+            container.innerHTML = '<p>Error loading content. Please try again later.</p>';
+          });
+      }
+
+      function getJsonPath(sectionId) {
+        const paths = {
+          'so': 'pages/blog.json',
+          'paper-notes': 'pages/paper_notes.json',
+          'mostly-sane-takes': 'pages/nuggets.json',
+          'weekly-press': 'pages/weekly_press.json'
+        };
+        return paths[sectionId] || 'pages/blog.json';
+      }
+    });
+  </script>
 </body>
-
-<script>
-  // Dropdown functionality
-  document.addEventListener('DOMContentLoaded', function () {
-    const dropdown = document.getElementById('sectionDropdown');
-    const dropdownToggle = document.getElementById('dropdownToggle');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const selectedSection = document.getElementById('selectedSection');
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
-    const contentSections = document.querySelectorAll('.content-section');
-
-    // Toggle dropdown
-    dropdownToggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      dropdown.classList.toggle('open');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-      if (!dropdown.contains(e.target)) {
-        dropdown.classList.remove('open');
-      }
-    });
-
-    // Handle dropdown item selection
-    dropdownItems.forEach(item => {
-      item.addEventListener('click', function() {
-        dropdownItems.forEach(i => i.classList.remove('active'));
-        contentSections.forEach(s => s.classList.remove('active'));
-
-        this.classList.add('active');
-        selectedSection.textContent = this.textContent;
-
-        const targetSection = document.getElementById(this.dataset.section);
-        if (targetSection) {
-          targetSection.classList.add('active');
-        }
-
-        dropdown.classList.remove('open');
-      });
-    });
-
-    // Close dropdown on Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        dropdown.classList.remove('open');
-      }
-    });
-  });
-</script>
-
-<script>
-  fetch('blog.json')
-    .then(response => {
-      if (!response.ok) throw new Error("Failed to load JSON");
-      return response.json();
-    })
-    .then(papers => {
-      const container = document.getElementById("so");
-
-      papers.forEach(paper => {
-        const article = document.createElement("article");
-        article.className = "post";
-
-        const metaText = paper.status 
-          ? `(${paper.status})`
-          : paper.date 
-            ? `${paper.date} -`
-            : "";
-
-        article.innerHTML = `
-          <h2 class="post-title">
-            <a href="${paper.slug}">
-              <span style="font-weight:500; color:var(--secondary-text);">
-                ${metaText}
-              </span>
-              ${paper.title}
-            </a>
-          </h2>
-          <p class="post-excerpt">
-            ${paper.excerpt || ""}
-          </p>
-          <a href="${paper.slug}" class="read-more">Continue reading</a>
-        `;
-
-        container.appendChild(article);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading blog.json:", error);
-    });
-</script>
-
-<script>
-  fetch('paper_notes/paper_notes.json')
-    .then(response => {
-      if (!response.ok) throw new Error("Failed to load JSON");
-      return response.json();
-    })
-    .then(posts => {
-      const container = document.getElementById("paper-notes");
-
-      posts.forEach(post => {
-        const article = document.createElement("article");
-        article.className = "post";
-
-        const metaText = post.status 
-          ? `(${post.status})`
-          : post.date 
-            ? `${post.date} -`
-            : "";
-
-        article.innerHTML = `
-          <h2 class="post-title">
-            <a href="${post.slug}">
-              <span style="font-weight:500; color:var(--secondary-text);">
-                ${metaText}
-              </span>
-              ${post.title}
-            </a>
-          </h2>
-          <p class="post-excerpt">
-            ${post.excerpt || ""}
-          </p>
-          <a href="blog_pages/${post.slug}" class="read-more">Continue reading</a>
-        `;
-
-        container.appendChild(article);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading paper_notes.json:", error);
-    });
-</script>
-
-
-
 
 </html>
