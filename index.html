@@ -1,74 +1,518 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penguin's Space</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <title>Rishikesh's Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Google Fonts (Inter for UI, Crimson Pro for main text, JetBrains Mono for code) -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Define base styles and variables for themes */
+        :root {
+            --color-bg: #ffffff;
+            --color-text: #1a1a1a;
+            --color-link: #1d4ed8;
+            --color-muted: #6b7280;
+            --color-border: #e5e7eb;
+            --color-code-bg: #f3f4f6;
+            --color-selection: #bfdbfe; /* Light blue-200 */
+        }
 
-    <link rel="stylesheet" href="src/index_styles.css">
+        /* Dark Theme Variables (Default) */
+        .dark {
+            --color-bg: #111111;
+            --color-text: #e5e7eb;
+            --color-link: #93c5fd;
+            --color-muted: #9ca3af;
+            --color-border: #374151;
+            --color-code-bg: #1f2937;
+            --color-selection: #1e3a8a; /* Dark blue-900 */
+        }
+
+        /* Sepia Theme Variables */
+        .sepia {
+            --color-bg: #f4ecd8;
+            --color-text: #433422;
+            --color-link: #8b5e3c;
+            --color-muted: #73624e;
+            --color-border: #d6cfbc;
+            --color-code-bg: #e5e0cf;
+            --color-selection: #fde68a; /* Sepia yellow-200 */
+        }
+
+        /* --- New Theme: Slate (Neutral Cool Grays) --- */
+        .slate {
+            --color-bg: #2d3748; /* Deep Blue-Gray */
+            --color-text: #f7f7f7;
+            --color-link: #93c5fd; /* Soft Blue */
+            --color-muted: #a0aec0;
+            --color-border: #4a5568;
+            --color-code-bg: #4a5568;
+            --color-selection: #667eea; /* Indigo-400 */
+        }
+
+        /* Apply variables to Tailwind utility classes */
+        .theme-bg { background-color: var(--color-bg); }
+        .theme-text { color: var(--color-text); }
+        .theme-link { color: var(--color-link); }
+        .theme-muted { color: var(--color-muted); }
+        .theme-border { border-color: var(--color-border); }
+        .theme-code-bg { background-color: var(--color-code-bg); }
+
+        /* Custom Typography */
+        .font-ui { font-family: 'Inter', sans-serif; }
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Style Refinement: Increased Readability for Body Text */
+        .font-serif-body { 
+            font-family: 'Crimson Pro', serif; 
+            font-size: 1.1rem; 
+        }
+        
+        /* Ensure responsive readability and consistent spacing */
+        .prose > * {
+            max-width: 100%;
+        }
+        
+        /* Refined Selection Color */
+        ::selection { background-color: var(--color-selection); }
+        ::-moz-selection { background-color: var(--color-selection); }
+
+        /* Focus Ring Styling for Accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--color-link);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+
+        /* Utility for Lucide Icons */
+        [data-lucide] { stroke-width: 1.5; }
+
+        /* --- Keyframes for Staggered Fade In Animation --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-on-load {
+            opacity: 0; 
+            animation-name: fadeIn;
+            animation-duration: 0.6s;
+            animation-fill-mode: forwards;
+            animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth ease-out */
+        }
+        /* Custom delay utilities */
+        .delay-0 { animation-delay: 0s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-800 { animation-delay: 0.8s; }
+
+        /* --- Reading Progress Bar Styling --- */
+        #reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background-color: var(--color-link); /* Use theme link color */
+            width: 0%;
+            z-index: 50; /* Below fixed header, but above content */
+            transition: width 0.1s linear;
+        }
+
+        /* --- 3D Card Hover Effect --- */
+        .card-hover-effect {
+            /* Enable perspective on the container for 3D effect */
+            perspective: 1000px; 
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s;
+        }
+
+        .card-hover-effect:hover {
+            /* Slight upward lift and 3D rotation */
+            transform: translateY(-2px) rotateX(1deg) rotateY(-1deg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
+        }
+
+        /* Subtle card background that tracks current theme */
+        .theme-card-bg {
+            background-color: rgba(17, 24, 39, 0.02); /* very light for light mode */
+        }
+        .dark .theme-card-bg {
+            background-color: rgba(31, 41, 55, 0.7);
+        }
+        .sepia .theme-card-bg {
+            background-color: rgba(214, 207, 188, 0.4);
+        }
+        .slate .theme-card-bg {
+            background-color: rgba(45, 55, 72, 0.85);
+        }
+    </style>
 </head>
-
-<body>
-    <!-- Navigation -->
-    <nav class="top-nav">
-        <div class="container">
-            <div class="nav-content">
-                <div class="nav-left">
-                    <img src="assets/download.jfif" alt="Profile" class="avatar">
-                    <span class="site-name">A Mostly Sane Penguin</span>
-                </div>
+<body class="theme-bg theme-text min-h-screen transition-colors duration-300 font-ui" onscroll="handleScroll()">
+    
+    <!-- Navigation Header (Glassmorphic) -->
+    <!-- Fixed position, blur effect, z-index and padding to contain nav -->
+    <header id="nav-header" class="fixed top-0 left-0 right-0 z-10 backdrop-blur-md bg-opacity-70 transition-colors duration-300">
+        <!-- Reading Progress Bar (Hidden on index pages, visible on post view) -->
+        <div id="reading-progress"></div>
+        
+        <!-- Inner container to align nav content with max-width of main content -->
+        <div class="max-w-3xl mx-auto px-6 py-4">
+            <nav class="flex items-center gap-6 text-sm font-medium tracking-wide">
+                <a href="index.html" class="nav-link opacity-100 border-b-2 border-current hover:opacity-100 transition-all">Home</a>
+                <a href="blog.html" class="nav-link opacity-50 border-b-2 border-transparent hover:opacity-100 transition-all">Blog</a>
+                <a href="projects.html" class="nav-link opacity-50 border-b-2 border-transparent hover:opacity-100 transition-all">Projects</a>
                 
-                <div class="nav-links">
-                    <a href="/blog.html" class="nav-link">Blog</a>
-                    <a href="/library_pages/projects_page.html" class="nav-link">Projects</a>
-
-                    <a href="https://github.com/Rishik00" class="nav-link">
-                        Github/Personal
-                    </a>
-
-                    <a href="https://github.com/A-Penguins-Lab" class="nav-link">
-                        Github/Lab
-                    </a>
-
-                    <a href="https://linkedin.com/in/rishikesh-mallagundla" class="nav-link">
-                        Linkedin
-                    </a>
-                    <a href="https://x.com/_notapenguin" class="nav-link">
-                        Twitter
-                    </a>
+                <div class="flex-1"></div>
+                
+                <!-- Theme Switchers -->
+                <div class="flex gap-2">
+                    <button id="theme-light" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Light Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    </button>
+                    <button id="theme-sepia" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Sepia Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2c-.54 0-1.04.14-1.5.34a7 7 0 0 0 11.23 11.16 7 7 0 0 0-10.9-12.5z"/><path d="M10 2v.03"/><path d="M12 4v.03"/><path d="M16 8v.03"/><path d="M18 10v.03"/><path d="M16 12v.03"/></svg>
+                    </button>
+                    <!-- Slate Theme Button -->
+                    <button id="theme-slate" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Slate Mode">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 12h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h9z"/></svg>
+                    </button>
+                    <button id="theme-dark" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Dark Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6.36 6.36 0 0 0 3.3 11 9 9 0 1 1-13.84-11A6.36 6.36 0 0 0 12 3z"/></svg>
+                    </button>
                 </div>
-            </div>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- Main Content -->
-    <div class="container">
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1>Hi, Rishikesh here!</h1>
-            <p class="tagline">Homo sapien</p>
+    <div id="app" class="max-w-3xl mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen">
+        
+        <!-- Main Content Area (Dynamic) - Added top margin to account for fixed header -->
+        <main id="content-container" class="flex-1 mt-[6rem] md:mt-[8rem]">
+            <!-- Content will be rendered here by JS -->
+        </main>
 
-            <p class="hero-description">
-                After four years in a Computer Science degree, I realised that I like computers,  That led me into building and researching <strong>Machine Learning</strong> and <strong>Low-Level Systems</strong>.  
-            </p>
+        <!-- Footer -->
+        <footer class="mt-24 pt-8 border-t theme-border flex justify-between items-center text-xs font-code theme-muted opacity-70">
+            <!-- <p>&copy; 2024 Rishikesh. Research & Engineering.</p> -->
+            <p>Built with plain HTML, JS & Tailwind.</p>
+        </footer>
 
-            <p class="hero-description">
-                Oppenheimer once said, <em>“If I can combine physics and New Mexico, my life would be ideal.”</em>  
-                For me, it’s: <em>“If I can combine Robotics, Reinforcement Learning, Topology, and Deep Learning, I’ll be very happy.”</em>
-            </p>
-
-            <p class="hero-description">
-                Feel free to check out <a href="library_pages/projects_page.html" class="social-link" id="work-link">my work</a>. If you want to collaborate or just nerd out about anything, 
-                <a href="mailto:mrishikesh104@gmail.com" class="social-link">please email me</a> or <a href="https://x.com/_notapenguin" class="social-link">dm me</a>.
-            </p>
-            
-            <div class="wave"></div>
-        </section>
     </div>
 
+    <!-- JavaScript for Routing, Theming, Content Management, and Scroll Handling -->
+    <script>
+        // --- Static Data ---
+        const USER_DATA = {
+            name: "Rishikesh Mallagundla",
+            title: "A sane human being",
+            about: `
+                I am a researcher and developer interested in the intersection of **Machine Learning** and **Systems**. 
+                My work focuses on making intelligence accessible and efficient. I believe that for AI to be truly useful, we need to understand the 'why' as much as the 'what'.
+            `,
+            quote: "If I can combine Robotics, Reinforcement Learning, Topology, and Deep Learning, I'll be very happy.",
+            social: [
+                { icon: 'github', url: '#', title: 'Github' },
+                { icon: 'twitter', url: '#', title: 'Twitter' },
+                { icon: 'linkedin', url: '#', title: 'LinkedIn' },
+                { icon: 'mail', url: 'mailto:mrishikesh104@gmail.com', title: 'Email' }
+            ]
+        };
+
+        const PROJECTS = [
+            {
+                title: "Neural Texture Synthesis",
+                description: "Implementing texture synthesis using shallow neural networks. Explored the Gram matrix representation of style in VGG-19.",
+                tags: ["Python", "PyTorch", "Computer Vision"],
+                link: "#"
+            },
+            {
+                title: "Distributed KV Store",
+                description: "A fault-tolerant, sharded key-value store built in C++ using the Raft consensus algorithm. Handles network partitions gracefully.",
+                tags: ["C++", "Systems", "Raft"],
+                link: "#"
+            },
+            {
+                title: "Topological Data Analysis for RL",
+                description: "Investigating how persistent homology can characterize the state space of reinforcement learning agents in maze environments.",
+                tags: ["Research", "Topology", "RL"],
+                link: "#"
+            }
+        ];
+
+        // --- Lucide Icon Definitions (Used for injecting SVGs) ---
+        const ICONS = {
+            'github': '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3-1 3-4.4 3-5.5 0-1.2-.5-2.7-1.3-3.9 0 0-1.7-.5-5.5 1.4-1.5-.4-3-1-4.5-1.4-3.8-1.9-5.5-1.4-5.5-1.4-.8 1.2-1.3 2.7-1.3 3.9 0 1.1 0 4.5 3 5.5-1.1 1.1-2.2 2-2.5 3.5v4"/>',
+            'twitter': '<path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 12.3-17.5 7.8 2.2.8 4.6 1.4 7.5-.3-4.5-2-.6-7.7-2.3-9.4C6 8.3 4 5 4 5s1.7.6 4.3 2.1c.5-.7 1.3-1.4 2.2-1.7 1.3-.4 2.4-.6 3.6-.3 2.3.6 4.1 2.5 5 5 1.7-.3 3.5-1.3 4.2-2.3z"/>',
+            'linkedin': '<path d="M16 8a4 4 0 0 1 4 4v7H17v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7H9v-7a6 6 0 0 1 6-6z"/><rect width="3" height="11" x="4" y="10"/><circle cx="5.5" cy="5.5" r="1.5"/>',
+            'mail': '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+            'arrowleft': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+            'externallink': '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/>',
+            'rss': '<path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>'
+        };
+
+        // --- Core Elements ---
+        const body = document.body;
+        const contentContainer = document.getElementById('content-container');
+        const readingProgressBar = document.getElementById('reading-progress');
+        
+        let currentTheme = localStorage.getItem('portfolioTheme') || 'dark'; // Set default to dark
+        let currentPost = null;
+
+        // --- Theme Management ---
+        const applyTheme = (themeName) => {
+            body.classList.remove('light', 'dark', 'sepia', 'slate');
+            body.classList.add(themeName);
+            body.classList.add('theme-bg', 'theme-text');
+            
+            // Get buttons dynamically since the element is now available
+            const themeButtons = {
+                light: document.getElementById('theme-light'),
+                sepia: document.getElementById('theme-sepia'),
+                dark: document.getElementById('theme-dark'),
+                slate: document.getElementById('theme-slate')
+            };
+
+            // Update active theme button styling
+            Object.keys(themeButtons).forEach(key => {
+                const btn = themeButtons[key];
+                if (!btn) return; 
+                
+                if (key === themeName) {
+                    btn.classList.add('opacity-100');
+                    // Custom styles for active buttons (using variables for theme colors where possible)
+                    if (key === 'light') btn.style.backgroundColor = 'var(--color-code-bg)';
+                    else if (key === 'dark') btn.style.backgroundColor = 'var(--color-border)';
+                    else if (key === 'sepia') btn.style.backgroundColor = '#dcd5c0';
+                    else if (key === 'slate') btn.style.backgroundColor = 'var(--color-border)'; 
+                } else {
+                    btn.classList.remove('opacity-100');
+                    btn.style.backgroundColor = '';
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            currentTheme = themeName;
+            localStorage.setItem('portfolioTheme', themeName);
+        };
+
+        // --- Reading Progress Bar Logic ---
+        const handleScroll = () => {
+            if (!readingProgressBar) return;
+            
+            const hash = window.location.hash.substring(1);
+            const isPostView = hash.startsWith('post/');
+
+            if (!isPostView) {
+                // Hide progress bar on non-post views
+                readingProgressBar.style.width = '0%';
+                readingProgressBar.style.display = 'none';
+                return;
+            }
+
+            readingProgressBar.style.display = 'block';
+
+            // Calculate scroll depth
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
+            // Calculate total scrollable area
+            const totalScrollable = scrollHeight - clientHeight;
+            
+            if (totalScrollable > 0) {
+                const scrollPercent = (scrollTop / totalScrollable) * 100;
+                readingProgressBar.style.width = scrollPercent + '%';
+            } else {
+                readingProgressBar.style.width = '0%'; // Handle case where content is shorter than viewport
+            }
+        };
+
+        // --- Routing and Content Rendering ---
+        const renderHomePage = () => {
+            contentContainer.innerHTML = renderHome();
+            injectSVGs();
+            attachEventListeners();
+            handleScroll();
+        };
+
+        // --- SVG Injection Function ---
+        const injectSVGs = () => {
+            document.querySelectorAll('[data-lucide]').forEach(svg => {
+                const iconName = svg.getAttribute('data-lucide');
+                const path = ICONS[iconName.toLowerCase()];
+                if (path) {
+                    // Only inject if the content is missing (to prevent duplicates)
+                    if (svg.innerHTML === '') {
+                        svg.innerHTML = path;
+                    }
+                }
+            });
+        };
+
+        // --- RENDER FUNCTIONS (HTML string output) ---
+
+        function renderHome() {
+            // Social links HTML generation
+            const socialLinksHtml = USER_DATA.social.map((item, idx) => `
+                <a href="${item.url}" class="opacity-70 hover:opacity-100 transition-opacity" title="${item.title}">
+                    <!-- SVG will be injected by injectSVGs() -->
+                    <svg data-lucide="${item.icon}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+                </a>
+            `).join('');
+
+            // Latest Posts Preview → link to main blog sections instead of local POSTS array
+            const latestPosts = [
+                {
+                    id: 'blog',
+                    title: 'So, about Base64',
+                    date: '2025/05/16',
+                    href: 'blog.html'
+                },
+                {
+                    id: 'nuggets',
+                    title: 'Why do I read so much?',
+                    date: '2025/09/14',
+                    href: 'blog.html'
+                }
+            ].map(post => `
+                <article class="py-1">
+                    <h4 class="text-base font-serif-body font-medium">
+                        <a href="${post.href}" class="theme-link hover:underline decoration-1 underline-offset-4">
+                            ${post.title}
+                        </a>
+                    </h4>
+                    <p class="text-xs font-code theme-muted">${post.date}</p>
+                </article>
+            `).join('');
+
+            // Latest Projects Preview (Top 2)
+            const latestProjects = PROJECTS.slice(0, 2).map(project => `
+                <div class="space-y-1">
+                    <h4 class="text-base font-serif-body font-medium">${project.title}</h4>
+                    <p class="text-sm opacity-80 theme-muted line-clamp-2">${project.description}</p>
+                    <div class="flex gap-2">
+                        ${project.tags.map(tag => `<span class="text-xs font-code opacity-70 theme-muted">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+
+            return `
+                <div class="space-y-10 md:space-y-12">
+                    <!-- Section 1: Header/Bio (Delay 0ms) -->
+                    <div class="fade-in-on-load delay-0 space-y-8">
+                        <header>
+                            <h1 class="text-3xl sm:text-4xl font-serif-body font-bold mb-4">${USER_DATA.name}</h1>
+                            <p class="font-code text-sm theme-muted">${USER_DATA.title}</p>
+                        </header>
+            
+                        <!-- Section 2: About (Delay 200ms) -->
+                        <section class="font-serif-body text-lg leading-relaxed max-w-2xl space-y-6 fade-in-on-load delay-200">
+                            <p>${USER_DATA.about.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+                            <blockquote class="pl-4 border-l-2 theme-border italic text-base opacity-80 my-8">
+                                "${USER_DATA.quote}"
+                            </blockquote>
+                        </section>
+            
+                        <!-- Section 3: Social Links (Delay 400ms) -->
+                        <div class="flex gap-6 pt-4 fade-in-on-load delay-400">
+                            ${socialLinksHtml}
+                        </div>
+                    </div>
+                    
+                    <!-- Section 4: Latest Posts Preview (Delay 600ms) -->
+                    <section class="border-t pt-8 theme-border fade-in-on-load delay-600">
+                        <h2 class="text-xl font-serif-body font-bold mb-6 flex items-center justify-between">
+                            Latest Essays
+                            <a href="blog.html" class="text-sm font-code theme-link opacity-70 hover:opacity-100 transition-opacity">
+                                View All &rarr;
+                            </a>
+                        </h2>
+                        <!-- Using space-y-4 for a compact list -->
+                        <div class="space-y-4">
+                            ${latestPosts || '<p class="opacity-50 italic font-serif-body theme-muted">No posts yet.</p>'}
+                        </div>
+                    </section>
+
+                    <!-- Section 5: Latest Projects Preview (Delay 800ms) -->
+                    <section class="border-t pt-8 theme-border fade-in-on-load delay-800">
+                        <h2 class="text-xl font-serif-body font-bold mb-6 flex items-center justify-between">
+                            Featured Projects
+                            <a href="projects.html" class="text-sm font-code theme-link opacity-70 hover:opacity-100 transition-opacity">
+                                View All &rarr;
+                            </a>
+                        </h2>
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            ${latestProjects || '<p class="opacity-50 italic font-serif-body theme-muted">No projects yet.</p>'}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+        
+        function renderProjects() {
+            const projectsHtml = PROJECTS.map((project, idx) => `
+                <!-- Kept 3D hover effect class for Projects -->
+                <div class="p-6 border rounded-lg card-hover-effect theme-border bg-current bg-opacity-0 hover:bg-opacity-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-serif-body font-semibold">${project.title}</h3>
+                        <a href="${project.link}" class="opacity-50 hover:opacity-100 theme-link" title="View ${project.title}">
+                            <!-- SVG will be injected by injectSVGs() -->
+                            <svg data-lucide="ExternalLink" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+                        </a>
+                    </div>
+                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
+                        ${project.description}
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        ${project.tags.map(tag => `
+                            <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">
+                                ${tag}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="animate-in fade-in duration-500">
+                    <h2 class="text-2xl font-serif-body font-bold mb-8">Projects</h2>
+                    <div class="grid gap-6">
+                        ${projectsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Event Listener Setup ---
+        const attachEventListeners = () => {
+            // Theme buttons
+            document.getElementById('theme-light').onclick = () => applyTheme('light');
+            document.getElementById('theme-sepia').onclick = () => applyTheme('sepia');
+            document.getElementById('theme-dark').onclick = () => applyTheme('dark');
+            document.getElementById('theme-slate').onclick = () => applyTheme('slate'); 
+        };
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Ensure body has the stored theme class before painting
+            const storedTheme = localStorage.getItem('portfolioTheme') || 'dark';
+            body.classList.add(storedTheme);
+
+            applyTheme(storedTheme);
+            renderHomePage();
+            attachEventListeners();
+            handleScroll(); // Initial call to set progress bar state
+        });
+    </script>
 </body>
 </html>

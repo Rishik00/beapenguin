@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects · Rishikesh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #ffffff;
+            --color-text: #1a1a1a;
+            --color-link: #1d4ed8;
+            --color-muted: #6b7280;
+            --color-border: #e5e7eb;
+            --color-code-bg: #f3f4f6;
+            --color-selection: #bfdbfe;
+        }
+        .dark {
+            --color-bg: #111111;
+            --color-text: #e5e7eb;
+            --color-link: #93c5fd;
+            --color-muted: #9ca3af;
+            --color-border: #374151;
+            --color-code-bg: #1f2937;
+            --color-selection: #1e3a8a;
+        }
+        .sepia {
+            --color-bg: #f4ecd8;
+            --color-text: #433422;
+            --color-link: #8b5e3c;
+            --color-muted: #73624e;
+            --color-border: #d6cfbc;
+            --color-code-bg: #e5e0cf;
+            --color-selection: #fde68a;
+        }
+        .slate {
+            --color-bg: #2d3748;
+            --color-text: #f7f7f7;
+            --color-link: #93c5fd;
+            --color-muted: #a0aec0;
+            --color-border: #4a5568;
+            --color-code-bg: #4a5568;
+            --color-selection: #667eea;
+        }
+        .theme-bg { background-color: var(--color-bg); }
+        .theme-text { color: var(--color-text); }
+        .theme-link { color: var(--color-link); }
+        .theme-muted { color: var(--color-muted); }
+        .theme-border { border-color: var(--color-border); }
+        .theme-code-bg { background-color: var(--color-code-bg); }
+        .font-ui { font-family: 'Inter', sans-serif; }
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+        .font-serif-body {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.1rem;
+        }
+        ::selection { background-color: var(--color-selection); }
+        ::-moz-selection { background-color: var(--color-selection); }
+        *:focus-visible {
+            outline: 2px solid var(--color-link);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+        [data-lucide] { stroke-width: 1.5; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-on-load {
+            opacity: 0;
+            animation-name: fadeIn;
+            animation-duration: 0.6s;
+            animation-fill-mode: forwards;
+            animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .delay-0 { animation-delay: 0s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-800 { animation-delay: 0.8s; }
+        .card-hover-effect {
+            perspective: 1000px;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-2px) rotateX(1deg) rotateY(-1deg);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        /* Match index.html card background */
+        .theme-card-bg {
+            background-color: rgba(17, 24, 39, 0.02);
+        }
+        .dark .theme-card-bg {
+            background-color: rgba(31, 41, 55, 0.7);
+        }
+        .sepia .theme-card-bg {
+            background-color: rgba(214, 207, 188, 0.4);
+        }
+        .slate .theme-card-bg {
+            background-color: rgba(45, 55, 72, 0.85);
+        }
+    </style>
+</head>
+<body class="theme-bg theme-text min-h-screen transition-colors duration-300 font-ui">
+    <header id="nav-header" class="fixed top-0 left-0 right-0 z-10 backdrop-blur-md bg-opacity-70 transition-colors duration-300">
+        <div class="max-w-3xl mx-auto px-6 py-4">
+            <nav class="flex items-center gap-6 text-sm font-medium tracking-wide">
+                <a href="index.html" class="nav-link opacity-50 border-b-2 border-transparent hover:opacity-100 transition-all">Home</a>
+                <a href="blog.html" class="nav-link opacity-50 border-b-2 border-transparent hover:opacity-100 transition-all">Blog</a>
+                <a href="projects.html" class="nav-link opacity-100 border-b-2 border-current hover:opacity-100 transition-all">Projects</a>
+                <div class="flex-1"></div>
+                <div class="flex gap-2">
+                    <button id="theme-light" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Light Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    </button>
+                    <button id="theme-sepia" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Sepia Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2c-.54 0-1.04.14-1.5.34a7 7 0 0 0 11.23 11.16 7 7 0 0 0-10.9-12.5z"/><path d="M10 2v.03"/><path d="M12 4v.03"/><path d="M16 8v.03"/><path d="M18 10v.03"/><path d="M16 12v.03"/></svg>
+                    </button>
+                    <button id="theme-slate" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Slate Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 12h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h9z"/></svg>
+                    </button>
+                    <button id="theme-dark" class="p-1.5 rounded-full hover:opacity-100 transition-opacity opacity-50" title="Dark Mode">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6.36 6.36 0 0 0 3.3 11 9 9 0 1 1-13.84-11A6.36 6.36 0 0 0 12 3z"/></svg>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="max-w-3xl mx-auto px-6 py-12 md:py-20 flex flex-col min-h-screen">
+        <main class="flex-1 mt-[6rem] md:mt-[8rem] space-y-10">
+            <header class="fade-in-on-load delay-0">
+                <h1 class="text-3xl sm:text-4xl font-serif-body font-bold mb-4">Projects</h1>
+                <p class="font-code text-sm theme-muted">Systems, research, and experiments I'm currently building.</p>
+            </header>
+
+            <section id="projects-list" class="grid gap-6 fade-in-on-load delay-200">
+                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl font-serif-body font-semibold">Neural Texture Synthesis</h2>
+                    </div>
+                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
+                        Implementing texture synthesis using shallow neural networks. Explored the Gram matrix representation of style in VGG-19.
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Python</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">PyTorch</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Computer Vision</span>
+                    </div>
+                </article>
+
+                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl font-serif-body font-semibold">Distributed KV Store</h2>
+                    </div>
+                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
+                        A fault-tolerant, sharded key-value store built in C++ using the Raft consensus algorithm. Handles network partitions gracefully.
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">C++</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Systems</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Raft</span>
+                    </div>
+                </article>
+
+                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl font-serif-body font-semibold">Topological Data Analysis for RL</h2>
+                    </div>
+                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
+                        Investigating how persistent homology can characterize the state space of reinforcement learning agents in maze environments.
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Research</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Topology</span>
+                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">RL</span>
+                    </div>
+                </article>
+            </section>
+        </main>
+
+        <footer class="mt-24 pt-8 border-t theme-border flex justify-between items-center text-xs font-code theme-muted opacity-70">
+            <p>&copy; 2024 Rishikesh. Research & Engineering.</p>
+            <p>Built with plain HTML, JS & Tailwind.</p>
+        </footer>
+    </div>
+
+    <script>
+        const body = document.body;
+        let currentTheme = localStorage.getItem('portfolioTheme') || 'dark';
+
+        const applyTheme = (themeName) => {
+            body.classList.remove('light', 'dark', 'sepia', 'slate');
+            body.classList.add(themeName);
+            body.classList.add('theme-bg', 'theme-text');
+
+            const themeButtons = {
+                light: document.getElementById('theme-light'),
+                sepia: document.getElementById('theme-sepia'),
+                dark: document.getElementById('theme-dark'),
+                slate: document.getElementById('theme-slate')
+            };
+
+            Object.keys(themeButtons).forEach(key => {
+                const btn = themeButtons[key];
+                if (!btn) return;
+                if (key === themeName) {
+                    btn.classList.add('opacity-100');
+                    if (key === 'light') btn.style.backgroundColor = 'var(--color-code-bg)';
+                    else if (key === 'dark') btn.style.backgroundColor = 'var(--color-border)';
+                    else if (key === 'sepia') btn.style.backgroundColor = '#dcd5c0';
+                    else if (key === 'slate') btn.style.backgroundColor = 'var(--color-border)';
+                } else {
+                    btn.classList.remove('opacity-100');
+                    btn.style.backgroundColor = '';
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            currentTheme = themeName;
+            localStorage.setItem('portfolioTheme', themeName);
+        };
+
+        const attachEventListeners = () => {
+            document.getElementById('theme-light').onclick = () => applyTheme('light');
+            document.getElementById('theme-sepia').onclick = () => applyTheme('sepia');
+            document.getElementById('theme-dark').onclick = () => applyTheme('dark');
+            document.getElementById('theme-slate').onclick = () => applyTheme('slate');
+        };
+
+        window.onload = () => {
+            applyTheme(currentTheme);
+            attachEventListeners();
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedTheme = localStorage.getItem('portfolioTheme');
+            if (storedTheme) {
+                document.body.classList.add(storedTheme);
+            } else {
+                document.body.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>
+
