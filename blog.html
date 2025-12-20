@@ -151,12 +151,6 @@
                 </header>
 
                 <nav class="flex flex-wrap gap-3 border-b pb-4 theme-border fade-in-on-load delay-200" aria-label="Blog Sections">
-                    <button class="blog-tab px-3 py-1 rounded-full text-sm font-ui theme-muted border theme-border active" data-section="so">
-                        About Something
-                    </button>
-                    <button class="blog-tab px-3 py-1 rounded-full text-sm font-ui theme-muted border theme-border" data-section="paper-notes">
-                        Paper Notes
-                    </button>
                     <button class="blog-tab px-3 py-1 rounded-full text-sm font-ui theme-muted border theme-border" data-section="mostly-sane-takes">
                         Mostly Sane Takes
                     </button>
@@ -166,8 +160,6 @@
                 </nav>
 
                 <div id="blog-sections" class="space-y-10 fade-in-on-load delay-400">
-                    <section id="so" class="blog-section space-y-4"></section>
-                    <section id="paper-notes" class="blog-section hidden space-y-4"></section>
                     <section id="mostly-sane-takes" class="blog-section hidden space-y-4"></section>
                     <section id="weekly-press" class="blog-section hidden space-y-4"></section>
                 </div>
@@ -175,7 +167,7 @@
         </main>
 
         <footer class="mt-24 pt-8 border-t theme-border flex justify-between items-center text-xs font-code theme-muted opacity-70">
-            <p>&copy; 2024 . Research & Engineering.</p>
+            <!-- <p>&copy; 2024 . Research & Engineering.</p> -->
             <p>Built with plain HTML, JS & Tailwind.</p>
         </footer>
     </div>
@@ -247,8 +239,6 @@
         };
 
         const sectionToPath = {
-            'so': 'pages/blog.json',
-            'paper-notes': 'pages/paper_notes.json',
             'mostly-sane-takes': 'pages/nuggets.json',
             'weekly-press': 'pages/weekly_press.json'
         };
@@ -329,7 +319,7 @@
             });
 
             // Load initial section
-            loadSection('so');
+            loadSection('mostly-sane-takes');
         };
 
         const attachEventListeners = () => {

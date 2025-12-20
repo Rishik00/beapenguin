@@ -1,6 +1,24 @@
 {
   "projects": [
     {
+      "title": "Neural Texture Synthesis",
+      "description": "Implementing texture synthesis using shallow neural networks. Explored the Gram matrix representation of style in VGG-19.",
+      "tags": ["Python", "PyTorch", "Computer Vision"],
+      "link": "https://github.com/yourusername/neural-texture-synthesis"
+    },
+    {
+      "title": "Distributed KV Store",
+      "description": "A fault-tolerant, sharded key-value store built in C++ using the Raft consensus algorithm. Handles network partitions gracefully.",
+      "tags": ["C++", "Systems", "Raft"],
+      "link": "https://github.com/yourusername/distributed-kv-store"
+    },
+    {
+      "title": "Topological Data Analysis for RL",
+      "description": "Investigating how persistent homology can characterize the state space of reinforcement learning agents in maze environments.",
+      "tags": ["Research", "Topology", "RL"],
+      "link": ""
+    },
+    {
       "title": "CrossOCR",
       "description": "A lightweight multilingual OCR tool for extracting and explaining text.",
       "github": "https://github.com/Rishik00/CrossOCR",

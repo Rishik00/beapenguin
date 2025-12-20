@@ -87,7 +87,6 @@
             transform: translateY(-2px) rotateX(1deg) rotateY(-1deg);
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
         }
-        /* Match index.html card background */
         .theme-card-bg {
             background-color: rgba(17, 24, 39, 0.02);
         }
@@ -136,47 +135,7 @@
             </header>
 
             <section id="projects-list" class="grid gap-6 fade-in-on-load delay-200">
-                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
-                    <div class="flex justify-between items-start mb-3">
-                        <h2 class="text-xl font-serif-body font-semibold">Neural Texture Synthesis</h2>
-                    </div>
-                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
-                        Implementing texture synthesis using shallow neural networks. Explored the Gram matrix representation of style in VGG-19.
-                    </p>
-                    <div class="flex gap-2 flex-wrap">
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Python</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">PyTorch</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Computer Vision</span>
-                    </div>
-                </article>
-
-                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
-                    <div class="flex justify-between items-start mb-3">
-                        <h2 class="text-xl font-serif-body font-semibold">Distributed KV Store</h2>
-                    </div>
-                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
-                        A fault-tolerant, sharded key-value store built in C++ using the Raft consensus algorithm. Handles network partitions gracefully.
-                    </p>
-                    <div class="flex gap-2 flex-wrap">
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">C++</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Systems</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Raft</span>
-                    </div>
-                </article>
-
-                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
-                    <div class="flex justify-between items-start mb-3">
-                        <h2 class="text-xl font-serif-body font-semibold">Topological Data Analysis for RL</h2>
-                    </div>
-                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
-                        Investigating how persistent homology can characterize the state space of reinforcement learning agents in maze environments.
-                    </p>
-                    <div class="flex gap-2 flex-wrap">
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Research</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">Topology</span>
-                        <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">RL</span>
-                    </div>
-                </article>
+                <!-- Projects will be loaded dynamically from projects.json -->
             </section>
         </main>
 
@@ -229,9 +188,87 @@
             document.getElementById('theme-slate').onclick = () => applyTheme('slate');
         };
 
+        // Load projects from JSON file
+        const loadProjects = async () => {
+            try {
+                const response = await fetch('projects.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load projects');
+                }
+                const data = await response.json();
+                
+                // Handle both formats: direct array or object with projects key
+                let projectsArray;
+                if (Array.isArray(data)) {
+                    projectsArray = data;
+                } else if (data.projects && Array.isArray(data.projects)) {
+                    projectsArray = data.projects;
+                } else {
+                    throw new Error('Projects data must be an array or have a "projects" key');
+                }
+                
+                renderProjects(projectsArray);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                document.getElementById('projects-list').innerHTML = `
+                    <p class="opacity-50 italic font-serif-body theme-muted">
+                        Unable to load projects. Error: ${error.message}
+                    </p>
+                `;
+            }
+        };
+
+        // Render projects to the page
+        const renderProjects = (projects) => {
+            const projectsList = document.getElementById('projects-list');
+            
+            if (!projects || projects.length === 0) {
+                projectsList.innerHTML = `
+                    <p class="opacity-50 italic font-serif-body theme-muted">No projects yet.</p>
+                `;
+                return;
+            }
+
+            projectsList.innerHTML = projects.map(project => {
+                // Handle both 'link' and 'github' keys
+                const projectLink = project.link || project.github || '';
+                // Handle both 'tags' and 'technologies' keys
+                const projectTags = project.tags || project.technologies || [];
+                
+                return `
+                <article class="p-6 border rounded-lg card-hover-effect theme-border theme-card-bg">
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl font-serif-body font-semibold">${project.title}</h2>
+                        ${projectLink ? `
+                            <a href="${projectLink}" class="opacity-50 hover:opacity-100 theme-link" title="View ${project.title}" target="_blank" rel="noopener noreferrer">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <path d="M15 3h6v6"/>
+                                    <path d="M10 14 21 3"/>
+                                </svg>
+                            </a>
+                        ` : ''}
+                    </div>
+                    <p class="mb-4 font-serif-body leading-relaxed opacity-80 theme-muted">
+                        ${project.description}
+                    </p>
+                    ${projectTags.length > 0 ? `
+                        <div class="flex gap-2 flex-wrap">
+                            ${projectTags.map(tag => `
+                                <span class="text-xs font-code px-2 py-1 rounded theme-code-bg opacity-90 theme-muted">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </article>`;
+            }).join('');
+        };
+
         window.onload = () => {
             applyTheme(currentTheme);
             attachEventListeners();
+            loadProjects();
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -245,4 +282,3 @@
     </script>
 </body>
 </html>
-
