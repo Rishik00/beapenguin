@@ -1,0 +1,267 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { fmtDate, readingMinutes } from '../utils';
+
+type Entry = CollectionEntry<'experiments'> | CollectionEntry<'random'>;
+
+interface Props {
+  entry: Entry;
+  base: string;
+  label: string;
+  newer?: Entry;
+  older?: Entry;
+}
+
+const { entry, base, label, newer, older } = Astro.props;
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(entry.body);
+const data = entry.data as Entry['data'] & { code?: string; logs?: string };
+---
+
+<Base title={data.title} description={data.summary} wide>
+  <div class="layout">
+    <aside class="toc" aria-label="Contents">
+      <a href={base} class="back">← {label}</a>
+      {
+        toc.length > 0 && (
+          <nav>
+            <p>Contents</p>
+            <ol>
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+    </aside>
+
+    <article>
+      <a href={base} class="back mobile">← {label}</a>
+      <header>
+        <h1>{data.title}</h1>
+        <p class="summary">{data.summary}</p>
+        <p class="facts">
+          <span>{fmtDate(data.date, 'long')}</span>
+          <span>{minutes} min read</span>
+          {data.code && <a class="u" href={data.code}>Code ↗</a>}
+          {data.logs && <a class="u" href={data.logs}>Logs ↗</a>}
+        </p>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <nav class="pager" aria-label="More">
+        {
+          older ? (
+            <a href={`${base}/${older.id}`}>
+              <span class="dir">Older</span>
+              <span>{older.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          newer && (
+            <a href={`${base}/${newer.id}`} class="next">
+              <span class="dir">Newer</span>
+              <span>{newer.data.title}</span>
+            </a>
+          )
+        }
+      </nav>
+    </article>
+  </div>
+</Base>
+
+<script>
+  // Highlight the section currently in view.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]')].map((a) => [
+      decodeURIComponent(a.hash.slice(1)),
+      a,
+    ]),
+  );
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.classList.remove('active'));
+        links.get(e.target.id)?.classList.add('active');
+      }
+    },
+    { rootMargin: '0px 0px -70% 0px' },
+  );
+  document.querySelectorAll('.prose h2[id]').forEach((h) => observer.observe(h));
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  article {
+    max-width: 48rem;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .toc {
+    display: none;
+  }
+
+  .back {
+    font-size: 13.5px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .back:hover {
+    color: var(--ink);
+  }
+
+  .back.mobile {
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 1180px) {
+    .layout {
+      grid-template-columns: 13rem minmax(0, 48rem) 13rem;
+      column-gap: 3.5rem;
+      justify-content: center;
+    }
+
+    .toc {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+      align-self: start;
+    }
+
+    .toc nav {
+      margin-top: 2.5rem;
+    }
+
+    .toc p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .toc ol {
+      list-style: none;
+      margin: 0.75rem 0 0;
+      padding: 0 0 0 0.9rem;
+      border-left: 1px solid var(--line);
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .toc ol a {
+      display: block;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--muted);
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .toc ol a:hover,
+    .toc ol a.active {
+      color: var(--ink);
+    }
+
+    .toc ol a.active::before {
+      content: '';
+      position: absolute;
+      left: calc(-0.9rem - 1px);
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: var(--ink);
+    }
+
+    .back.mobile {
+      display: none;
+    }
+  }
+
+  header {
+    margin-bottom: 2.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    font-size: clamp(2rem, 4.6vw, 2.8rem);
+    line-height: 1.1;
+    margin: 0 0 1rem;
+    text-wrap: balance;
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 1.08rem;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 1.4rem 0 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .facts a {
+    color: var(--ink-2);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-top: 5rem;
+  }
+
+  .pager a {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--raised);
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: border-color 0.2s;
+  }
+
+  .pager a:hover {
+    border-color: var(--line-strong);
+  }
+
+  .pager .dir {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .pager .next {
+    text-align: right;
+    grid-column: 2;
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fmtDate, getPosts } from '../../utils';
+
+const posts = await getPosts('random');
+---
+
+<Base title="Random" description="The blog.">
+  <header class="page-head">
+    <h1>Random</h1>
+    <p>Posts about whatever I'm thinking about.</p>
+  </header>
+
+  {
+    posts.length > 0 ? (
+      <ul class="rows list">
+        {posts.map((p) => (
+          <li>
+            <a class="row" href={`/random/${p.id}`}>
+              <span class="meta">{fmtDate(p.data.date)}</span>
+              <span class="title">{p.data.title}</span>
+              <span class="arrow">→</span>
+              <p class="desc">{p.data.summary}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="empty">Nothing here yet.</p>
+    )
+  }
+</Base>
+
+<style>
+  .list {
+    border-top: 1px solid var(--line);
+  }
+
+  .empty {
+    margin: 0;
+    padding: 3rem 0;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+</style>

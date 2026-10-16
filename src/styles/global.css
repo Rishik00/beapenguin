@@ -1,0 +1,610 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/* ---------- tokens ---------- */
+
+:root {
+  --bg: #e8e5de;
+  --raised: #efede7;
+  --sunken: #e1ded6;
+  --line: rgb(28 26 22 / 0.1);
+  --line-strong: rgb(28 26 22 / 0.2);
+  --ink: #1c1b19;
+  --ink-2: #4a4741;
+  --muted: #858178;
+
+  --grain-opacity: 0.07;
+  --grain-blend: multiply;
+
+  /* Geist throughout. --serif is the long-form body face; it's Geist too. */
+  --sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --serif: var(--sans);
+  --mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --display: var(--sans);
+  --display-weight: 600;
+  --display-tracking: -0.035em;
+
+  /* Chart colours (dataviz reference palette, validated on these surfaces).
+     Specs reference them as tokens: '@s1' -> --viz-s1. */
+  --viz-s1: #2a78d6;
+  --viz-s2: #eb6834;
+  --viz-seq0: #e4e9ee;
+  --viz-seq1: #86b6ef;
+  --viz-seq2: #3987e5;
+  --viz-seq3: #1c5cab;
+  --viz-seq4: #0d366b;
+  --viz-ink: #1c1b19;
+  --viz-ink2: #4a4741;
+  --viz-muted: #858178;
+  /* Plotly only parses the comma rgba() form. */
+  --viz-grid: rgba(28, 26, 22, 0.08);
+  --viz-axis: rgba(28, 26, 22, 0.22);
+  --viz-surface: #efede7;
+
+  --wrap: 58rem;
+  --radius: 10px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #1a1a19;
+  --raised: #222221;
+  --sunken: #161615;
+  --line: rgb(255 250 240 / 0.08);
+  --line-strong: rgb(255 250 240 / 0.18);
+  --ink: #e8e5de;
+  --ink-2: #b4b0a8;
+  --muted: #7d7972;
+
+  --viz-s1: #3987e5;
+  --viz-s2: #d95926;
+  --viz-seq0: #252a30;
+  --viz-seq1: #184f95;
+  --viz-seq2: #2a78d6;
+  --viz-seq3: #6da7ec;
+  --viz-seq4: #b7d3f6;
+  --viz-ink: #e8e5de;
+  --viz-ink2: #b4b0a8;
+  --viz-muted: #7d7972;
+  --viz-grid: rgba(255, 250, 240, 0.07);
+  --viz-axis: rgba(255, 250, 240, 0.2);
+  --viz-surface: #222221;
+
+  --grain-opacity: 0.11;
+  --grain-blend: soft-light;
+
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+}
+
+/* The matte finish: a fixed layer of fine noise over everything. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Theme switch: the new theme grows as a circle out of the toggle (see Header). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: 1.75rem;
+}
+
+main {
+  flex: 1;
+  padding-block: 4.5rem 6rem;
+  animation: rise 0.5s var(--ease) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  main {
+    animation: none;
+  }
+}
+
+/* ---------- links ---------- */
+
+.u {
+  background-image: linear-gradient(var(--line-strong), var(--line-strong));
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 1px;
+  transition: background-image 0.2s;
+}
+
+.u:hover {
+  background-image: linear-gradient(var(--ink), var(--ink));
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- page header ---------- */
+
+.page-head {
+  margin-bottom: 3.25rem;
+}
+
+.page-head h1 {
+  font-family: var(--display);
+  font-weight: var(--display-weight);
+  font-size: clamp(2.2rem, 5vw, 2.8rem);
+  line-height: 1.08;
+  letter-spacing: var(--display-tracking);
+  margin: 0 0 0.85rem;
+}
+
+.page-head p {
+  color: var(--ink-2);
+  max-width: 38rem;
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+/* ---------- sections ---------- */
+
+.section + .section {
+  margin-top: 4rem;
+}
+
+.section {
+  scroll-margin-top: 2rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.section-title a {
+  font-size: 13px;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+
+.section-title a:hover {
+  color: var(--ink);
+}
+
+/* ---------- rows: the main list pattern ---------- */
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 8rem 1fr auto;
+  gap: 0.2rem 1.5rem;
+  align-items: baseline;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+a.row {
+  color: inherit;
+}
+
+.row .meta {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.row .title {
+  font-weight: 500;
+}
+
+.row .desc {
+  grid-column: 2;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  margin: 0;
+}
+
+.row .arrow {
+  grid-row: 1;
+  grid-column: 3;
+  color: var(--muted);
+  font-size: 13px;
+  transform: translateX(-4px);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.25s var(--ease);
+}
+
+a.row:hover .arrow {
+  opacity: 1;
+  transform: none;
+}
+
+a.row:hover .title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: 1fr auto;
+  }
+  .row .meta,
+  .row .desc {
+    grid-column: 1 / -1;
+  }
+  .row .arrow {
+    grid-row: 2;
+    grid-column: 2;
+  }
+}
+
+/* ---------- chips ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chip {
+  font-size: 12px;
+  color: var(--ink-2);
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+/* ---------- cards ---------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+/* A lone card at the end of a row takes the full width. */
+.cards > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.2rem 1.25rem 1.15rem;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: inherit;
+  transition: border-color 0.25s, transform 0.3s var(--ease);
+}
+
+a.card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.hint {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.card p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  flex: 1;
+}
+
+.card .chips {
+  margin-top: 0.35rem;
+}
+
+/* Hatched box standing in for a figure or screenshot that doesn't exist yet. */
+.placeholder {
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px dashed var(--line-strong);
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 9px, var(--line) 9px 10px),
+    var(--sunken);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---------- prose (long-form write-ups) ---------- */
+
+.prose {
+  font-family: var(--serif);
+  font-size: 1.06rem;
+  line-height: 1.72;
+  letter-spacing: -0.003em;
+}
+
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+:where(.prose p) {
+  margin: 0;
+}
+
+.prose h2,
+.prose h3 {
+  font-family: var(--sans);
+  letter-spacing: -0.015em;
+  scroll-margin-top: 2rem;
+}
+
+.prose h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 2.6em 0 0;
+}
+
+.prose h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 2em 0 0;
+}
+
+.prose h2 + *,
+.prose h3 + * {
+  margin-top: 0.6em;
+}
+
+.prose a {
+  background-image: linear-gradient(var(--line-strong), var(--line-strong));
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+}
+
+.prose a:hover {
+  background-image: linear-gradient(var(--ink), var(--ink));
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose li::marker {
+  color: var(--muted);
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 0.1em 0 0.1em 1.2em;
+  border-left: 2px solid var(--line-strong);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--line);
+  margin-block: 2.5em;
+}
+
+.prose code {
+  font-family: var(--mono);
+  font-size: 0.78em;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: var(--sunken);
+  border: 1px solid var(--line);
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 1rem 1.15rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  line-height: 1.55;
+}
+
+/* Shiki emits both themes as CSS variables; pick one per site theme. */
+.prose pre.astro-code,
+.prose pre.astro-code span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+[data-theme='dark'] .prose pre.astro-code,
+[data-theme='dark'] .prose pre.astro-code span {
+  color: var(--shiki-dark);
+}
+
+.prose pre.astro-code {
+  background-color: var(--sunken);
+}
+
+.prose pre code {
+  font-size: 0.8rem;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.prose th,
+.prose td {
+  padding: 0.6rem 0.75rem 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.prose table + * {
+  margin-top: 1.6em;
+}
+
+.prose figure {
+  margin-inline: 0;
+}
+
+.prose figcaption {
+  margin-top: 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.prose img {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.prose .placeholder {
+  aspect-ratio: 16 / 7;
+  font-family: var(--sans);
+}
+
+/* Optional one-paragraph summary box at the top of a write-up. */
+.prose .claim {
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--raised);
+  border: 1px solid var(--line);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}

@@ -1,0 +1,281 @@
+---
+import Base from '../layouts/Base.astro';
+import { openSource, papers, roles, writing } from '../data/site';
+
+const tabs = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'papers', label: 'Papers' },
+  { id: 'writing', label: 'Writing' },
+  { id: 'open-source', label: 'Open source' },
+];
+---
+
+<Base title="Work" description="Roles, papers, published writing and open-source contributions.">
+  <header class="page-head">
+    <h1>Work</h1>
+    <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p>
+  </header>
+
+  <div class="work">
+    <div class="tabs" role="tablist" aria-label="Work sections" aria-orientation="vertical">
+      {
+        tabs.map((t, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${t.id}`}
+            aria-controls={`panel-${t.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-tab={t.id}
+          >
+            {t.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="panels">
+      <section class="panel" role="tabpanel" id="panel-experience" aria-labelledby="tab-experience">
+        <ul class="rows">
+          {
+            roles.map((r) => (
+              <li class="row">
+                <span class="meta">{r.period}</span>
+                <span class="title">
+                  {r.href ? (
+                    <a class="u" href={r.href}>
+                      {r.org}
+                    </a>
+                  ) : (
+                    r.org
+                  )}
+                  <span class="muted"> · {r.title}</span>
+                </span>
+                <span />
+                <p class="desc">{r.blurb}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="panel" role="tabpanel" id="panel-papers" aria-labelledby="tab-papers" hidden>
+        <ul class="rows">
+          {
+            papers.map((p) => (
+              <li class="row">
+                <span class="meta">{p.year}</span>
+                <span class="title">
+                  {p.href ? (
+                    <a class="u" href={p.href}>
+                      {p.title}
+                    </a>
+                  ) : (
+                    p.title
+                  )}
+                </span>
+                <span />
+                <p class="desc">
+                  {/* Kept on one line: a line break here renders as a space before each comma. */}
+                  {p.authors.map((a, i) => <>{i > 0 && ', '}{a === 'R. Mallagundla' ? <strong>{a}</strong> : a}</>)}
+                  {' · '}
+                  <em>{p.venue}</em>
+                  {p.code && (
+                    <>
+                      {' · '}
+                      <a class="u" href={p.code}>
+                        code
+                      </a>
+                    </>
+                  )}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="more">
+          <a class="u" href="https://scholar.google.com/citations?user=jW4OgYwAAAAJ&hl=en">All papers on Google Scholar ↗</a>
+        </p>
+      </section>
+
+      <section class="panel" role="tabpanel" id="panel-writing" aria-labelledby="tab-writing" hidden>
+        <ul class="rows">
+          {
+            writing.map((w) => (
+              <li>
+                <a class="row" href={w.href}>
+                  <span class="meta">{w.where}</span>
+                  <span class="title">{w.title}</span>
+                  <span class="arrow">↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="panel" role="tabpanel" id="panel-open-source" aria-labelledby="tab-open-source" hidden>
+        <ul class="rows">
+          {
+            openSource.map((o) => (
+              <li>
+                <a class="row" href={o.href}>
+                  <span class="meta">Contributor</span>
+                  <span class="title">{o.name}</span>
+                  <span class="arrow">↗</span>
+                  <p class="desc">{o.what}</p>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+  const panels = [...document.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+
+  function select(id: string, focus = false) {
+    const tab = tabs.find((t) => t.dataset.tab === id);
+    if (!tab) return;
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach((p) => (p.hidden = p.id !== `panel-${id}`));
+    if (focus) tab.focus();
+    history.replaceState(null, '', `#${id}`);
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab.dataset.tab!));
+    // Arrow keys move between tabs, as for any tablist.
+    tab.addEventListener('keydown', (e) => {
+      const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      select(tabs[(i + step + tabs.length) % tabs.length].dataset.tab!, true);
+    });
+  });
+
+  // Open the tab named in the URL, e.g. /work#papers.
+  const initial = location.hash.slice(1);
+  if (initial) select(initial);
+</script>
+
+<style>
+  .work {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    grid-template-areas: 'tabs panels';
+    column-gap: 3rem;
+  }
+
+  /* All panels share one cell, so the area is as tall as the longest panel
+     and the tabs stay put (vertically centred) when switching. */
+  .panels {
+    grid-area: panels;
+    display: grid;
+    border-top: 1px solid var(--line);
+  }
+
+  .panel {
+    grid-area: 1 / 1;
+  }
+
+  .panel[hidden] {
+    display: block;
+    visibility: hidden;
+  }
+
+  .panel:not([hidden]) {
+    animation: swap 0.4s var(--ease) both;
+  }
+
+  @media (max-width: 760px) {
+    /* On phones, size to the visible panel instead of the tallest one. */
+    .panel[hidden] {
+      display: none;
+    }
+  }
+
+  @keyframes swap {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .panel strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .more {
+    margin: 1.25rem 0 0;
+    font-size: 14px;
+  }
+
+  .tabs {
+    grid-area: tabs;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  [role='tab'] {
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: var(--raised);
+    color: var(--ink-2);
+    transition: color 0.2s, border-color 0.2s, background-color 0.25s, transform 0.3s var(--ease);
+  }
+
+  [role='tab']:hover {
+    color: var(--ink);
+    border-color: var(--ink-2);
+  }
+
+  [role='tab'][aria-selected='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+
+  @media (max-width: 760px) {
+    .work {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'tabs' 'panels';
+      row-gap: 1.5rem;
+    }
+
+    .tabs {
+      align-self: start;
+      flex-direction: row;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    [role='tab'] {
+      flex: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel:not([hidden]) {
+      animation: none;
+    }
+  }
+</style>

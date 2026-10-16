@@ -1,0 +1,424 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { builds, intro, links, papers, profile, projects, roles } from '../data/site';
+import { fmtDate, getExperimentList, getPosts } from '../utils';
+
+const experiments = await getExperimentList();
+const posts = await getPosts('random');
+const featured = await getEntry('experiments', intro.featured);
+
+const index = [
+  { href: '/experiments', name: 'Experiments', what: 'Write-ups of what I ran and what came out', count: experiments.length },
+  { href: '/random', name: 'Random', what: 'The blog', count: posts.length },
+  { href: '/work', name: 'Work', what: 'Roles, papers and open source', count: roles.length + papers.length },
+  { href: '/projects', name: 'Projects', what: 'Products, libraries and small builds', count: projects.length + builds.length },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base home>
+  <div class="home">
+    <figure class="portrait fade" style="--i: 0">
+        <div class="frame">
+          <img src="/avatar.jpg" alt="A sleeping penguin" width="736" height="736" />
+          <span class="zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>
+        </div>
+        <figcaption>A mostly sane penguin</figcaption>
+      </figure>
+
+
+    <section class="intro">
+      <h1 class="fade" style="--i: 1">{profile.name}</h1>
+      <p class="tagline fade" style="--i: 2">
+        {intro.role} at <a href={intro.org.href}>{intro.org.name}</a>
+      </p>
+      <p class="bio fade" style="--i: 3">{intro.bio}</p>
+      <ul class="links fade" style="--i: 4">
+        {
+          links.map((l) => (
+            <li>
+              <a class="u" href={l.href}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+      {
+        featured && (
+          <a class="featured fade" style="--i: 5" href={`/experiments/${featured.id}`}>
+            <span class="label">Featured · {fmtDate(featured.data.date)}</span>
+            <span class="title">{featured.data.title}</span>
+            <span class="summary">{featured.data.summary}</span>
+            <span class="read">Read the write-up →</span>
+          </a>
+        )
+      }
+
+      <nav class="index" aria-label="Sections">
+        <h2 class="fade" style="--i: 5">Index</h2>
+        <ul>
+          {
+            index.map((i, n) => (
+              <li class="fade" style={`--i: ${6 + n}`}>
+                <a href={i.href}>
+                  <span class="name">{i.name}</span>
+                  <span class="what">{i.what}</span>
+                  <span class="count">{pad(i.count)}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+  </div>
+</Base>
+
+<style>
+  /* Four cells: the featured card and the index share a row, so their tops line up. */
+  .home {
+    --index-head: calc(13px * 1.6 + 0.4rem);
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    grid-template-areas:
+      'portrait intro'
+      'featured index';
+    column-gap: 3.5rem;
+    row-gap: 2.25rem;
+    align-items: start;
+    padding-top: 0.5rem;
+  }
+
+  /* ---- staggered entrance (replaces the page-wide fade from Base) ---- */
+
+  :global(main:has(.home)) {
+    animation: none;
+  }
+
+  .fade {
+    animation: fade-up 0.7s var(--ease) both;
+    animation-delay: calc(var(--i) * 70ms + 80ms);
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(3px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade {
+      animation: none;
+    }
+  }
+
+  /* ---- left column: portrait + featured write-up ---- */
+
+  .portrait {
+    grid-area: portrait;
+    margin: 0;
+    padding: 0.65rem 0.65rem 0.55rem;
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .frame {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f3f1ec;
+  }
+
+  .frame img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transform: scale(1.12);
+  }
+
+  /* On light paper, let the drawing sit on the card's own colour. */
+  :global([data-theme='light']) .frame {
+    background: transparent;
+  }
+
+  :global([data-theme='light']) .frame img {
+    mix-blend-mode: multiply;
+  }
+
+  .zzz {
+    position: absolute;
+    left: 70%;
+    top: 22%;
+    font-style: italic;
+    font-weight: 500;
+    color: #3a3936;
+    pointer-events: none;
+  }
+
+  .zzz i {
+    position: absolute;
+    opacity: 0;
+    animation: snooze 3.6s ease-in-out infinite;
+  }
+
+  .zzz i:nth-child(1) {
+    font-size: 12px;
+  }
+
+  .zzz i:nth-child(2) {
+    font-size: 15px;
+    animation-delay: 1.2s;
+  }
+
+  .zzz i:nth-child(3) {
+    font-size: 19px;
+    animation-delay: 2.4s;
+  }
+
+  @keyframes snooze {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(-10deg);
+    }
+    20% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(22px, -46px) rotate(8deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zzz {
+      display: none;
+    }
+  }
+
+  figcaption {
+    margin-top: 0.5rem;
+    padding-inline: 0.15rem;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* Pushed down past the index's top rule and heading to line up with its first row. */
+  .featured {
+    grid-area: featured;
+    margin-top: calc(1px + 1.75rem + var(--index-head));
+    display: grid;
+    padding: 1.3rem 1.3rem 1.25rem;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--raised);
+    transition: transform 0.3s var(--ease), border-color 0.25s;
+  }
+
+  .featured:hover {
+    transform: translateY(-2px);
+  }
+
+  .featured .label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .featured .title {
+    margin-top: 0.6rem;
+    font-size: 1.12rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+
+  .featured .summary {
+    margin-top: 0.85rem;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .featured .read {
+    margin-top: 1.1rem;
+    font-size: 13.5px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .featured:hover .read {
+    color: var(--ink);
+  }
+
+  /* ---- right column: intro + index ---- */
+
+  .intro {
+    grid-area: intro;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    font-size: clamp(2.3rem, 5vw, 3.1rem);
+    line-height: 1.05;
+    margin: 1.25rem 0 0;
+  }
+
+  .tagline {
+    margin: 0.7rem 0 0;
+    color: var(--muted);
+    font-size: 14.5px;
+  }
+
+  .tagline a {
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s;
+  }
+
+  .tagline a:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  .bio {
+    margin: 1.4rem 0 0;
+    max-width: 36rem;
+    color: var(--ink-2);
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1.3rem;
+    list-style: none;
+    margin: 1.3rem 0 0;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .index {
+    grid-area: index;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .index h2 {
+    margin: 0 0 0.4rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .index ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .index li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .index a {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr) auto;
+    column-gap: 1.5rem;
+    align-items: baseline;
+    padding: 0.85rem 0.75rem;
+    margin-inline: -0.75rem;
+    border-radius: 8px;
+    transition: background-color 0.25s;
+  }
+
+  .index a:hover,
+  .index a:focus-visible {
+    background: var(--raised);
+  }
+
+  .index .name {
+    font-weight: 500;
+    font-size: 1.02rem;
+  }
+
+  .index .what {
+    color: var(--muted);
+    font-size: 14.5px;
+    transition: color 0.2s;
+  }
+
+  .index .count {
+    color: var(--muted);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .index a:hover .what,
+  .index a:hover .count {
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 760px) {
+    .home {
+      grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+      grid-template-areas:
+        'intro intro'
+        'index index'
+        'portrait featured';
+      column-gap: 1rem;
+      row-gap: 2.5rem;
+    }
+
+    .featured {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .index a {
+      grid-template-columns: minmax(0, 1fr) auto;
+      row-gap: 0.15rem;
+    }
+
+    .index .what {
+      grid-column: 1;
+      grid-row: 2;
+      font-size: 14px;
+    }
+
+    .index .count {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .home {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'intro' 'index' 'portrait' 'featured';
+    }
+
+    .portrait {
+      max-width: 15rem;
+    }
+  }
+</style>

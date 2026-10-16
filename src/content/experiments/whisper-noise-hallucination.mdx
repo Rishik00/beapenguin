@@ -1,0 +1,200 @@
+---
+title: Why Whisper Says “Thank You” to White Noise
+summary: Eleven speech recognisers on pure noise, then layer and neuron ablations inside Whisper. Larger models hallucinate more, the colour of the noise matters as much as the model, and one early-encoder neuron switches the behaviour off without hurting real speech.
+date: 2026-08-15
+thread: Interpretability
+---
+
+import Figure from '../../components/Figure.astro';
+
+I fed pure noise to speech recognisers and counted how often they wrote something down anyway. It started with a small observation: give a one-second noise clip to Whisper in the ChatGPT app and it transcribes “Yeah”. I wanted to know whether that was a fluke or a pattern, and if it was a pattern, where inside the model it comes from.
+
+**Results at a glance:** Hallucinating on noise is not random. Each model collapses onto one or two stock phrases, and bigger Whisper models do it far more: Tiny never does, Large-v3 says “thank you” to **99.6%** of white-noise clips. A CTC model with no language model (Wav2Vec2) never does it at all. The colour of the noise matters as much as the model size: Whisper Small hallucinates on **95%** of brown-noise clips and **0%** of blue-noise clips. Inside Whisper, the behaviour depends on a chain of encoder layers, and in Whisper Base a single early neuron (**layer 0, neuron 19**) is enough to switch it off. Zeroing that neuron changes only **16 of 563** real-speech transcripts.
+
+<Figure title="Share of white-noise clips each recogniser transcribes as speech" plot="/figures/whisper/fig1_all_models.json" height={430} label="Figure 1. Horizontal bars: share of 500 white-noise clips transcribed as text, for eleven recognisers.">
+
+<div slot="table">
+
+| Recogniser | Hallucinated | Clips (of 500) | Most common output |
+| --- | ---: | ---: | --- |
+| Whisper Tiny | 0.0% | 0 | — |
+| Whisper Base | 5.8% | 29 | “I'm going to put it on the side.” (repeated) |
+| Whisper Small | 14.2% | 71 | “you” |
+| Whisper Medium | 100% | 500 | “thanks for watching” |
+| Whisper Large-v3 | 99.6% | 498 | “thank you” |
+| Distil-Whisper Small | 97.8% | 489 | “yeah” |
+| Distil-Whisper Medium | 100% | 500 | “I'm” |
+| Distil-Whisper Large-v3 | 100% | 500 | “thank you” |
+| Wav2Vec2 Base (CTC) | 0.0% | 0 | — |
+| SeamlessM4T v2 Large | 100% | 500 | one Devanagari sequence |
+| SpeechBrain CRDNN | 100% | 500 | “monsieur d'Artagnan” |
+
+</div>
+
+Figure 1. Any non-empty transcription of pure noise counts as a hallucination. 500 white-noise clips, 2–5 s each at −25 dBFS. Hover a bar for the model's most common output.
+
+</Figure>
+
+## Why do this?
+
+Speech recognisers are run on whatever audio arrives: silence, room tone, music, fans. If a model writes confident text over that audio, the error is hard to catch downstream, because it reads like a real transcript. “Thank you” at the end of a meeting transcript looks entirely plausible.
+
+Whisper's hallucinations are well known anecdotally. I wanted two things the anecdotes don't give: a controlled measurement across many models on identical inputs, and a causal handle on where inside the model the behaviour lives.
+
+## What did I do?
+
+### The models
+
+Eleven recognisers, all run on exactly the same clips: five OpenAI Whisper checkpoints (Tiny to Large-v3), three Distil-Whisper checkpoints, Wav2Vec2 Base fine-tuned on 960 hours of LibriSpeech, Meta's SeamlessM4T v2 Large, and SpeechBrain's CRDNN with a recurrent language model. Wav2Vec2 is the odd one out on purpose: it decodes with greedy CTC and no language model, so it shows what happens without an autoregressive decoder.
+
+### The noise
+
+The first run used 500 white-noise clips, each 2–5 seconds at 16 kHz, scaled to −25 dBFS, with a fixed seed. A follow-up run widened this to **10,000 clips**: 2,000 each of white, pink, brown, blue and violet noise, at the same loudness, on the five Whisper sizes.
+
+### What counts as a hallucination
+
+Any transcription that is non-empty after normalisation. The input contains no speech, so any word is invented. Punctuation-only outputs count as empty. This definition is strict on purpose: it's unambiguous for synthetic noise and makes models directly comparable.
+
+### The interventions
+
+On Whisper Base and Small, with 150 white-noise clips:
+
+- **Layer bypass:** skip one encoder block at a time and rerun every clip.
+- **Neuron ablation:** in the layer chosen by the bypass test, rank every MLP neuron by its mean absolute activation (after GELU) on 10 hallucinating clips, then zero each of the top 128 individually, at every frame, and rerun those clips.
+- **Real-speech check:** transcribe the 563 US-English utterances of MInDS-14 twice with Whisper Base, once normally and once with the strongest neuron zeroed.
+
+Everything ran on one RTX 4090. Later runs used half precision and a fixed output budget (64 tokens for the interventions, 128 for the noise-colour run), so ablated models stuck in repetition loops don't dominate runtime.
+
+## Results
+
+### Bigger Whisper models hallucinate more, and on the same few phrases
+
+Model scale does not make Whisper more cautious on noise. Tiny never produced text. Base did on 6% of clips, Small on 14%, Medium on every clip, Large-v3 on all but two (Figure 1).
+
+The outputs are not arbitrary. All 29 of Base's hallucinations were the same repeated sentence. Small said “you” 70 times out of 71. Medium said “thanks for watching” on 413 clips, and every one of Large-v3's 498 outputs was “thank you”. These are the closing lines of subtitled videos, which is exactly what a model trained on web subtitles would fall back on. The distilled models do the same with conversational filler: “yeah”, “so”, “I'm”.
+
+Wav2Vec2 is the contrast that matters: blank on all 500 clips. With no language model to pull it toward a likely sentence, CTC decoding just emits blanks. SeamlessM4T and SpeechBrain, which both decode with strong sequence models, hallucinated on everything. So the behaviour follows the decoder design, not Whisper specifically.
+
+### The colour of the noise matters as much as the model
+
+White noise turned out to be one point in a much larger space. Across five noise colours, the hallucination rate swings wildly within a single model (Figure 2): Whisper Small hallucinates on **95%** of brown-noise clips but **0%** of blue and violet. Base is the reverse, with almost nothing on brown and blue but **25%** on violet. Medium and Large-v3 hallucinate on nearly everything; their lowest rates are on violet noise, 74% and 63%, and Medium also drops to 80% on brown.
+
+<Figure title="Hallucination rate by Whisper size and noise colour" plot="/figures/whisper/fig2_noise_colour.json" height={360} label="Figure 2. Heatmap of hallucination rate for five Whisper sizes across five noise colours.">
+
+<div slot="table">
+
+| Model | White | Pink | Brown | Blue | Violet |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Whisper Tiny | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Whisper Base | 5.7% | 7.6% | 0.1% | 0.1% | 25.4% |
+| Whisper Small | 14.2% | 44.2% | 94.9% | 0.0% | 0.0% |
+| Whisper Medium | 100.0% | 100.0% | 80.0% | 100.0% | 73.9% |
+| Whisper Large-v3 | 99.7% | 99.0% | 100.0% | 100.0% | 63.4% |
+
+</div>
+
+Figure 2. 2,000 clips per noise colour (10,000 in total), −25 dBFS. The white-noise column reproduces Figure 1's Whisper rates to within half a point.
+
+</Figure>
+
+The stock phrases stay the same across colours: Small still says “you”, Large-v3 still says “thank you”. What changes is whether the noise gets past the threshold at all. That points at the acoustic front end, which led to the next experiment.
+
+### Removing encoder layers can switch hallucinations off, or on
+
+If hallucination were purely a decoder habit, the encoder shouldn't matter much. It does (Figure 3). In Whisper Base, bypassing any of the first five encoder layers removes every baseline hallucination. Bypassing the last layer does the opposite: the rate jumps from 7.3% to **38%**, about five times higher. Whisper Small has the same split, and more extreme: skipping layer 1 makes it hallucinate on **99%** of clips, while skipping most later layers removes hallucinations entirely.
+
+<Figure title="Hallucination rate with one encoder layer bypassed" plot="/figures/whisper/fig3_layer_bypass.json" height={360} label="Figure 3. Two bar charts, Whisper Base and Whisper Small: hallucination rate after bypassing each encoder layer, with the baseline as a dashed line.">
+
+<div slot="table">
+
+| Layer bypassed | Whisper Base | Whisper Small |
+| --- | ---: | ---: |
+| none (baseline) | 7.3% | 11.3% |
+| 0 | 0.0% | 8.7% |
+| 1 | 0.0% | 99.3% |
+| 2 | 0.0% | 0.7% |
+| 3 | 0.0% | 0.0% |
+| 4 | 0.0% | 0.0% |
+| 5 | 38.0% | 0.0% |
+| 6 | | 0.0% |
+| 7 | | 0.0% |
+| 8 | | 5.3% |
+| 9 | | 0.0% |
+| 10 | | 2.7% |
+| 11 | | 0.0% |
+
+</div>
+
+Figure 3. 150 white-noise clips. Dashed line: hallucination rate with every layer intact.
+
+</Figure>
+
+So the encoder holds both kinds of computation: some layers build up the representation that the decoder mistakes for speech, and others suppress it. Hallucination comes from the balance between them, not from one bad region. Many layers tie for “removes everything”, so the layers chosen for the neuron search (Base layer 0, Small layer 3) are representatives of those ties, not uniquely responsible.
+
+### Activation magnitude finds candidates, not causes
+
+Within the chosen layer, I ranked neurons by how strongly they fire on hallucinating noise, then zeroed the top 128 one at a time (Figure 4). The ranking helps: in both models one of the two most active neurons wipes out all 10 test hallucinations (**neuron 19** in Base, **neuron 2164** in Small). But the most active neuron in Base, neuron 718, suppresses only 2 of 10, and neuron 2027, ranked 14th, is as effective as neuron 19. High activation flags candidates; only the ablation tells you which ones matter.
+
+<Figure title="Activation rank against hallucinations suppressed, per neuron" plot="/figures/whisper/fig4_neuron_rank.json" height={400} label="Figure 4. Scatter plot of 128 neurons per model: activation rank against the number of hallucinations suppressed when the neuron is zeroed.">
+
+<div slot="table">
+
+| Model | Neuron | Activation rank | Mean abs. activation | Suppressed (of 10) |
+| --- | ---: | ---: | ---: | ---: |
+| Whisper Base | 19 | 2 | 0.794 | 10 |
+| Whisper Base | 2027 | 14 | 0.317 | 10 |
+| Whisper Base | 1945 | 9 | 0.417 | 9 |
+| Whisper Base | 44 | 8 | 0.431 | 7 |
+| Whisper Base | 1880 | 16 | 0.308 | 7 |
+| Whisper Base | 718 | 1 | 0.798 | 2 |
+| Whisper Small | 2164 | 2 | 1.274 | 10 |
+| Whisper Small | 158 | 1 | 1.632 | 9 |
+| Whisper Small | 197 | 25 | 0.204 | 8 |
+| Whisper Small | 434 | 16 | 0.423 | 7 |
+| Whisper Small | 3024 | 4 | 0.815 | 5 |
+| Whisper Small | 2759 | 6 | 0.742 | 5 |
+
+</div>
+
+Figure 4. Whisper Base layer 0 (2,048 neurons) and Whisper Small layer 3 (3,072 neurons); the 128 most active of each were ablated. 10 hallucinating clips per ablation.
+
+</Figure>
+
+### Neuron 19 barely touches real speech
+
+A neuron that stops hallucinations is only interesting if it isn't simply breaking the model. So I ran Whisper Base over 563 real utterances from MInDS-14, once normally and once with neuron 19 zeroed (Figure 5). Word error rate moved from **35.39%** to **35.37%**. Only 16 transcripts changed at all: 8 improved, 5 got worse, 3 changed wording with the same error.
+
+<Figure title="Word errors on real speech, with and without neuron 19" plot="/figures/whisper/fig5_real_speech.json" height={340} label="Figure 5. Grouped bars of substitutions, deletions and insertions on 563 utterances, normal versus neuron 19 zeroed.">
+
+<div slot="table">
+
+| | Normal | Neuron 19 zeroed |
+| --- | ---: | ---: |
+| Substitutions | 654 | 651 |
+| Deletions | 85 | 84 |
+| Insertions | 2,124 | 2,126 |
+| Word error rate | 35.389% | 35.365% |
+| Transcripts changed | | 16 of 563 |
+
+</div>
+
+Figure 5. MInDS-14 US-English split (563 utterances, 8,090 reference words), resampled from 8 kHz to 16 kHz. The high baseline error is partly the references: some are truncated or mistranscribed.
+
+</Figure>
+
+The changed transcripts are revealing. “I have to pin a bill” became the correct “pay a bill”; “card” became “car”; “address” became “ad drive”. These are swaps between acoustically close words, not a topic or a phrase. My working hypothesis: neuron 19 contributes to an early acoustic feature that the decoder reads as evidence that speech is present. Real speech supplies plenty of redundant evidence, so removing one neuron rarely matters. Noise supplies almost none, so that one feature is enough to tip the model into its favourite sentence.
+
+## Conclusion and limitations
+
+Hallucination on noise depends on the architecture and the checkpoint, and it is highly structured: larger Whisper models collapse noise onto a handful of subtitle phrases, CTC without a language model doesn't hallucinate at all, and the noise spectrum alone can move one model from 0% to 95%. Inside Whisper, the encoder both enables and suppresses the behaviour, and in Whisper Base one early neuron is enough to switch it off while leaving real-speech transcription almost untouched.
+
+What this doesn't show:
+
+- **Neuron 19 is not proven to be a “hallucination neuron”.** It may encode an energy or spectral pattern that only becomes decisive when the input is ambiguous.
+- **Small samples in the causal tests.** The neuron search used 10 hallucinating clips, and the layer tests 150. Several layers tie, so the chosen layers are representatives.
+- **One neuron at a time.** Single ablations can't detect neurons that only matter together. The final neuron search also had no random-neuron control group, so it doesn't measure how much better than chance the ranking is.
+- **Synthetic noise only.** No music, babble, room tone or real silence yet. An attempt to measure cross-attention entropy failed because of how the Whisper implementation exposes attention, so it contributes no evidence.
+
+The next experiment is to characterise neuron 19 directly: pure tones across frequency, amplitude sweeps, modulated noise, phonemes and speech mixed with rising noise, each paired with the ablation and with control neurons matched for activation. Given Figure 2, the first thing to check is whether its activation tracks the noise spectrum.
+
+**Data:** clips manifest, per-model outputs, layer and neuron ablation results are in the [asr_bucket](https://huggingface.co/buckets/Rishik001/asr_bucket) on Hugging Face.

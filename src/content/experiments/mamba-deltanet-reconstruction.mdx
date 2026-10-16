@@ -1,0 +1,135 @@
+---
+title: Can Mamba Reconstruct What It Just Read?
+summary: An autoencoder test of Mamba, two-direction Mamba, Hydra and Gated DeltaNet. Bidirectional encoders didn't help, five times more data closed most of the gap, and 4× compression broke every model.
+date: 2026-08-29
+thread: Architectures
+---
+
+import Figure from '../../components/Figure.astro';
+
+I trained small encoder–decoder models to read a 256-token passage and write it back out, token by token, from the encoder's memory. The point was to test a suspicion before building anything bigger: that Mamba struggles as an encoder because it only reads left to right, so an early position never sees what comes after it. I compared standard Mamba against two ways of making it bidirectional, and against Gated DeltaNet, whose memory update rule is designed for this kind of retention.
+
+**Results at a glance:** Directionality was not the problem. Both bidirectional encoders did *worse* than standard Mamba: two-direction Mamba by **2.0** points, Hydra by **10.2**. Gated DeltaNet led at **77.6%** free-running token accuracy, but no model reconstructed a single passage perfectly. Training on five times more text changed the picture more than any architecture did: standard Mamba jumped from **71.1%** to **98.1%**, and the top three models ended within 0.3 points of each other. Then, with real 4× compression, every model collapsed to **under 3%**.
+
+<Figure title="Free-running reconstruction accuracy at two data scales" plot="/figures/mamba/fig1_data_scale.json" height={400} label="Figure 1. Grouped bars: free-running token accuracy for four architectures, trained on 100k and 500k tokens.">
+
+<div slot="table">
+
+| Architecture | 100k tokens | 500k tokens | Change | Exact passages (500k) |
+| --- | ---: | ---: | ---: | ---: |
+| Gated DeltaNet | **77.57%** | **98.20%** | +20.63 | 2 of 20 |
+| Mamba | 71.13% | 98.09% | +26.96 | 2 of 20 |
+| Two-direction Mamba | 69.14% | 97.89% | +28.75 | 2 of 20 |
+| Hydra + Mamba decoder | 60.98% | 95.21% | +34.23 | 0 of 20 |
+
+At 100k tokens no model reconstructed any of the 19 validation passages exactly.
+
+</div>
+
+Figure 1. One memory vector per input token (no compression). Free-running: the decoder conditions on its own previous predictions, so errors can compound.
+
+</Figure>
+
+## Why do this?
+
+The longer-term idea is context compression: an encoder turns a passage into a handful of memory vectors, and a language model reads from those instead of the full text. The In-context Autoencoder (ICAE) showed this working at 4× compression, after large-scale pretraining [1]. Mamba is an appealing encoder for it, since it runs in linear time and supports cheap recurrent inference [2, 3].
+
+Before compressing anything, I wanted to check a simpler thing. If a small Mamba-family model can't reliably reconstruct text when it gets **one memory slot per token**, cutting the number of slots won't fix it. And if it can't, is that because ordinary Mamba is one-directional?
+
+## What did I do?
+
+### The task
+
+An autoencoder with no compression. The encoder reads the full 256-token passage and produces 256 memory vectors (128 features each), one per position. The decoder then regenerates the passage left to right: at each step it sees the previous token and the memory vector for the current position, never the token it has to predict.
+
+The encoder seeing the whole passage isn't leakage; its job is to represent the source. What matters is that the decoder stays strictly autoregressive, so the only route to the answer is through the memory vectors. This is much easier than real compression, which makes it a clean diagnostic: a failure here can't be blamed on lost information.
+
+### The models
+
+All four have a width of 128, two encoder and two decoder layers, and about 20M parameters. The decoder is always a causal two-layer model.
+
+- **Mamba:** Mamba-2 encoder and decoder, both left to right [3].
+- **Two-direction Mamba:** Mamba has no causal mask to switch off; direction is part of the recurrence. So this encoder runs one scan forward and one over the reversed passage, with shared weights, and merges them per position with a learned projection.
+- **Hydra + Mamba decoder:** Hydra is the principled bidirectional extension of Mamba, mixing in both directions through a quasiseparable matrix rather than two stitched scans [4]. I used the official implementation for the encoder.
+- **Gated DeltaNet:** gating decides when to erase memory and a delta rule makes targeted updates, with reported gains in retrieval and memorisation over Mamba-2 [5]. Four heads, head dimension 64.
+
+### Data and training
+
+100,000 tokens from WikiText-2 [6], tokenised with GPT-2's tokenizer and packed into 256-token passages: 371 for training and 19 held-out from the tail of the sample. The follow-up used 500,000 tokens (1,933 training passages, 20 held out).
+
+Every run used the same recipe: 10 epochs, batch size 8, AdamW at 3e-4 with cosine decay to 3e-5, weight decay 0.01, gradient clipping at 1.0, bf16, seed 7, on one RTX 4090. Because epochs were fixed, the 500k runs also got more updates: 2,410 against 460.
+
+### How I scored it
+
+- **Teacher-forced accuracy:** the decoder always gets the correct previous token. This measures single-step prediction.
+- **Free-running accuracy:** the decoder starts from a beginning-of-sequence marker and feeds itself its own predictions for all 256 tokens. This is the strict measure, since one mistake can derail the rest.
+- **Exact passages:** the number of passages with all 256 tokens correct.
+
+## Results
+
+### Bidirectional encoders don't help
+
+If the lack of future context were the bottleneck, the two bidirectional encoders should have won. They came last (Figure 1, 100k bars). Gated DeltaNet beat Mamba by **6.4** points, two-direction Mamba trailed it by **2.0**, and Hydra by **10.2**.
+
+Teacher-forced and free-running accuracy were almost identical for every model (Figure 2, left). So these gaps aren't errors compounding during generation; the per-token predictions were already wrong. That points away from direction and toward how each model writes into and reads from its memory, which is what Gated DeltaNet's update rule targets. That's an interpretation, not a demonstrated mechanism.
+
+Hydra's poor showing needs a caveat. It was designed and evaluated as a pretrained bidirectional encoder, BERT-style [4]. Here it was trained from scratch on 100k tokens and attached to a separately initialised Mamba decoder. This says Hydra isn't a drop-in fix at this budget, not that Hydra is weak.
+
+### Five times more data closes most of the gap
+
+With 500k tokens and everything else unchanged, every model improved by 20 to 34 points (Figure 1, 500k bars). Standard Mamba reached **98.1%**, and Gated DeltaNet's lead shrank from 6.4 points to **0.1**. The ranking held at both scales, but the differences didn't: at 100k the architecture looked decisive, and at 500k the top three are effectively tied. Most of the original failure was too little data and too few updates.
+
+Even so, only 2 of 20 passages came back perfectly for the best three models, and none for Hydra. At 256 tokens, 98% token accuracy still means about five wrong tokens per passage.
+
+### 4× compression breaks every model
+
+The last run added real compression: 64 learned memory markers appended to each 256-token passage, with only those 64 states passed to the decoder. Same data, models and schedule as the 500k run.
+
+Every model failed (Figure 2, right). Teacher-forced accuracy reached only 17–19%, and free-running accuracy fell to **0.6–2.1%**: after the first few mistakes, generation drifted into repetitive generic phrases. Hydra came first this time, but at 2.1% that ranking means very little.
+
+<Figure title="Teacher-forced vs free-running accuracy, without and with compression" plot="/figures/mamba/fig2_compression.json" height={420} label="Figure 2. Two panels of grouped bars: teacher-forced and free-running accuracy per architecture, uncompressed at 100k tokens and 4x compressed at 500k tokens.">
+
+<div slot="table">
+
+| Architecture | Teacher-forced (none) | Free-running (none) | Teacher-forced (4×) | Free-running (4×) |
+| --- | ---: | ---: | ---: | ---: |
+| Gated DeltaNet | 77.55% | 77.57% | 16.74% | 0.63% |
+| Mamba | 71.24% | 71.13% | 18.22% | 1.37% |
+| Two-direction Mamba | 69.18% | 69.14% | 17.87% | 1.19% |
+| Hydra + Mamba decoder | 60.98% | 60.98% | 18.40% | 2.11% |
+
+No model reconstructed any passage exactly under compression.
+
+</div>
+
+Figure 2. Left: no compression, 100k training tokens. Right: 64 memory vectors per 256 tokens, 500k training tokens. The right panel has its own y-axis.
+
+</Figure>
+
+Two training problems showed up only under compression. Validation accuracy peaked around epochs 4–6 and then fell while training loss kept improving, so the models were overfitting, and gradient norms rose until clipping kicked in repeatedly. The big gap between teacher-forced and free-running scores also means the decoder never learned to recover from its own mistakes, because teacher forcing never showed it any. This result tests the whole design together (appended markers, prefix conditioning, random initialisation, plain teacher forcing), not memory capacity alone.
+
+## Conclusion and limitations
+
+Mamba's one-directional encoder was not what held reconstruction back. Making it bidirectional, by two scans or by Hydra, made things slightly worse. Data mattered far more than architecture: with 500k tokens, plain Mamba reconstructs 98% of held-out tokens, essentially level with Gated DeltaNet. Real 4× compression is a different problem, and this setup doesn't come close to solving it.
+
+What this can't tell you:
+
+- **Small scale.** 500k tokens and 2,410 updates at most, ~20M parameters, trained from scratch. ICAE and Hydra's published results rely on far more pretraining [1, 4].
+- **Small evaluation.** 19–20 held-out passages from the tail of the training sample, not the official WikiText-2 validation split, and packed passages that can cut across sentences.
+- **One seed, one compression ratio.** No run-to-run variance, and nothing between 1 slot per token and 1 per 4.
+- **One way to make Mamba bidirectional.** Shared-weight forward and reverse scans are only one construction.
+
+### Next steps
+
+1. **Map the compression cliff.** Sweep 128, 96 and 64 slots to find where reconstruction breaks, and try non-uniform or learned allocation of slots across a passage. Add validation-based early stopping and train the decoder on its own imperfect predictions.
+2. **Other languages.** Repeat with a multilingual tokenizer and corpus, including mixed-language passages, to see whether per-token information density moves the compression ceiling.
+3. **Images.** Tokenise images with a pretrained VQ tokenizer and reuse the same pipeline and exact-match metric. Raster order puts spatial neighbours far apart, which makes it a fresh test of whether a bidirectional encoder helps there.
+
+## References
+
+1. Ge, Hu, Wang, Wang, Chen and Wei. [In-context Autoencoder for Context Compression in a Large Language Model](https://openreview.net/forum?id=uREj4ZuGJE). ICLR 2024.
+2. Gu and Dao. [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752). 2023.
+3. Dao and Gu. [Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality](https://arxiv.org/abs/2405.21060). 2024.
+4. Hwang, Lahoti, Puduppully, Dao and Gu. [Hydra: Bidirectional State Space Models Through Generalized Matrix Mixers](https://arxiv.org/abs/2407.09941). NeurIPS 2024. [Code](https://github.com/goombalab/hydra).
+5. Yang, Kautz and Hatamizadeh. [Gated Delta Networks: Improving Mamba2 with Delta Rule](https://proceedings.iclr.cc/paper_files/paper/2025/file/4904fad153f6434a7bcf04465d4be2cc-Paper-Conference.pdf). ICLR 2025.
+6. Merity, Xiong, Bradbury and Socher. [Pointer Sentinel Mixture Models](https://arxiv.org/abs/1609.07843). 2016.

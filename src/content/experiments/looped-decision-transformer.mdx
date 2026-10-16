@@ -1,0 +1,166 @@
+---
+title: Can One Looped Block Replace a Decision Transformer's Stack?
+summary: A shared transformer block applied up to four times, against a four-block Decision Transformer on Key-to-Door. A quarter of the parameters solved every layout, but so did a single block. Then a slightly bigger grid starved every model of successful data.
+date: 2026-10-07
+thread: Architectures
+---
+
+import Figure from '../../components/Figure.astro';
+
+A Decision Transformer stacks distinct transformer blocks. I wanted to know whether one shared block, applied in a loop, could do the same job: recurrent depth instead of more layers, at about a quarter of the parameters. I tested it on Key-to-Door, the delayed-reward gridworld from the Decision Transformer paper, and also checked whether re-feeding the original input at every loop (input injection) makes the recurrence easier to train.
+
+**Results at a glance:** On 3×3 rooms, a looped model with **204,932** parameters solved all **64/64** layouts, matching the four-block baseline's 799,748 parameters, a **74%** reduction. But a single application, which is just a one-block Decision Transformer, also solved everything, so the task hit a ceiling before recurrence was ever needed. Four loops was the one setting that slipped, to **48/64**. On 4×4 rooms every model solved **0/64**, because the random-policy dataset contained only **7** successful episodes instead of **202**. Input injection looked decisive early on (**2/64** without, **62/64** with), but code changed between those runs, so it's a lead rather than a result.
+
+<Figure title="Layouts solved, by model and room size" plot="/figures/looped-dt/fig1_rollout_success.json" height={380} label="Figure 1. Grouped bars: layouts solved out of 64 for the standard DT and looped DT with 1 to 4 applications, on 3x3 and 4x4 rooms.">
+
+<div slot="table">
+
+| Model | Parameters | 3×3 rooms | 4×4 rooms |
+| --- | ---: | ---: | ---: |
+| Standard DT, four blocks | 799,748 | 64/64 | 0/64 |
+| Looped DT, one application | 204,932 | 64/64 | 0/64 |
+| Looped DT, two applications | 204,932 | 64/64 | 0/64 |
+| Looped DT, three applications | 204,932 | 64/64 | 0/64 |
+| Looped DT, four applications | 204,932 | 48/64 | 0/64 |
+
+</div>
+
+Figure 1. Every model is rolled out once on all 64 corner layouts, prompted with return 1. One seed (0) per condition.
+
+</Figure>
+
+## Why do this?
+
+Looped transformers trade parameters for compute: instead of learning four different blocks, learn one and run it four times. If that works, depth becomes something you can choose at inference time. Decision Transformers are a good place to test it, since they are small, train fast, and Key-to-Door has a clear pass/fail signal.
+
+Before asking whether more loops help, I needed to know whether a looped model can match the standard one at all, and whether that answer survives a harder version of the task.
+
+## What did I do?
+
+### The environment
+
+Key-to-Door has three rooms visited in order, nine actions in each. In the first, the agent has to touch a visible key; the second is an empty distractor room; in the third, it has to touch a visible door. The reward is 1 only if it touched both. At each phase the agent starts in a random corner, with the target in the opposite corner, which gives **64 layouts**. Every model is evaluated on all of them.
+
+Each observation is seven numbers: the agent's position, a one-hot phase indicator, and the visible target's position (zero in the distractor room). Whether the agent holds the key is deliberately left out. Prompted with return 1, a policy can still succeed by walking to whatever target it sees. So the hard part is learning which actions mattered from offline data, not remembering a hidden bit.
+
+This is my own reconstruction. The paper doesn't fully specify the rooms, observations or dynamics, and the official repository doesn't include the environment or dataset. The setup matches the paper's three-phase structure and its reported random success rate (3.1% in the paper, 3.4% here), but the numbers aren't comparable to the paper's.
+
+### The data
+
+6,000 episodes from a uniformly random policy, 27 actions each, split 90/10 at random (not stratified by outcome). Successful episodes carry return-to-go 1 throughout, failed ones 0.
+
+### The models
+
+Both tokenise each timestep as return-to-go, state and action, add modality and timestep embeddings, and predict the action from the hidden state at each state token.
+
+```text
+Standard DT:  h_0 = embedded trajectory
+              h_(i+1) = Block_i(h_i)                          4 distinct blocks
+
+Looped DT:    h_0 = 0
+              h_(i+1) = SharedBlock(h_i + embedded trajectory)    1 block, L times
+```
+
+The looped model is supervised after every iteration, with iteration `i` weighted by `i / (1 + … + L)`. That means the final prediction's weight changes with the loop count (1.0 at one loop, 0.67 at two, 0.4 at four), so loop count is tangled up with the training objective. The 3×3 standard baseline was trained before a refactor, when it shared this intermediate supervision; the later 4×4 standard model is supervised only at its last layer.
+
+Shared settings: width 128, 4 heads, feed-forward 512, dropout 0.1, batch 128, AdamW at 3e-4, weight decay 1e-4, gradient clipping at 1.0, 60 epochs, seed 0. Runs used Modal T4s and were logged to Weights & Biases.
+
+## Results
+
+### Input injection looked decisive, but the evidence is weak
+
+The first runs compared two-loop models with and without input injection. Re-evaluated on all 64 layouts, the non-injected model solved **2**, the injected one **62**, and the standard model of that time **30** (Figure 2). Originally I'd scored them on 100 random layouts (0, 94 and 48), and an early checkpoint-loading bug had treated old checkpoints as injected; the exhaustive re-evaluation fixes both.
+
+<Figure title="Preliminary checkpoints, re-evaluated on all 64 layouts" plot="/figures/looped-dt/fig2_injection.json" height={240} label="Figure 2. Horizontal bars: layouts solved by the non-injected looped model, the early standard model and the injected looped model.">
+
+<div slot="table">
+
+| Checkpoint | Exhaustive (of 64) | Original random evaluation (of 100) |
+| --- | ---: | ---: |
+| Looped DT ×2, no injection | 2 | 0 |
+| Standard DT, early run | 30 | 48 |
+| Looped DT ×2, input injection | 62 | 94 |
+
+</div>
+
+Figure 2. These checkpoints were trained at different points while the code was changing, so they don't isolate input injection.
+
+</Figure>
+
+I wouldn't lean on this. The training code changed between those runs, and a later standard model with an identical configuration jumped from 30/64 to **64/64**. The block is also pre-norm with residual connections already, so “injection stops the model losing its input” is a guess. It was enough to use injection for the sweep; a controlled rerun on the current code is still owed.
+
+### At 3×3, one block is already enough
+
+With injection on, I swept one to four loops on the same dataset (Figure 1, blue bars). One, two and three loops all solved every layout, matching the standard model with **74% fewer parameters**.
+
+That sounds like a win for looping, but one application solves everything too, and at one loop injection does nothing (the recurrence starts from zero), so it's simply a one-block Decision Transformer. The task saturates before recurrent depth has anything to do. What this shows is that 3×3 Key-to-Door is solvable by a tiny model, not that loops replace distinct depth. The 64 layouts are also just 16 key–door problems repeated over four distractor starts, all present in training, so perfect success may be memorisation.
+
+### Four loops lost 16 layouts
+
+Four loops solved only **48/64**, even though it had the highest action accuracy on successful validation trajectories (36.7%). With one seed, and the final head's loss weight dropping to 0.4 at four loops, I can't say whether that's recurrence, seed noise or the objective.
+
+It does show how little action accuracy means here. Every model sits close to chance (25% with four actions) on validation actions, even the ones that solve every layout (Figure 3). The logged trajectories are random: nine actions in the distractor room, wasted moves, and actions after the target is already reached. A good policy disagrees with that log constantly and still reaches the door. Rollout success is the metric that counts.
+
+<Figure title="Validation action accuracy on the 3×3 sweep" plot="/figures/looped-dt/fig3_action_accuracy.json" height={380} label="Figure 3. Grouped bars: validation action accuracy for all trajectories and for successful trajectories only, with a dashed chance line at 25 percent.">
+
+<div slot="table">
+
+| Model | All trajectories | Successful only | Layouts solved |
+| --- | ---: | ---: | ---: |
+| Standard DT | 25.86% | 34.63% | 64/64 |
+| Looped ×1 | 25.30% | 32.41% | 64/64 |
+| Looped ×2 | 25.30% | 35.00% | 64/64 |
+| Looped ×3 | 25.52% | 34.63% | 64/64 |
+| Looped ×4 | 25.55% | 36.67% | 48/64 |
+
+</div>
+
+Figure 3. About 20 successful trajectories (540 actions) were in the validation split, so small differences here are a handful of tokens.
+
+</Figure>
+
+### At 4×4, every model fails because the data has no successes
+
+Growing each room to 4×4, with the same nine actions per phase, should have been a modest step up. Instead, random-policy success fell from 3.4% to **0.12%**: **7** successful episodes out of 6,000, against 202 before, about **29× fewer** (Figure 4). None of the seven landed in validation. Every model solved 0/64 layouts (Figure 1, orange bars), and validation accuracy only measured agreement with random actions.
+
+<Figure title="Successful episodes in each random-policy dataset" plot="/figures/looped-dt/fig4_coverage.json" height={200} label="Figure 4. Horizontal bars: 202 successful episodes for 3x3 rooms against 7 for 4x4 rooms, out of 6,000 each.">
+
+<div slot="table">
+
+| Rooms | Successful episodes (of 6,000) | Success rate |
+| --- | ---: | ---: |
+| 3×3 | 202 | 3.367% |
+| 4×4 | 7 | 0.117% |
+
+</div>
+
+Figure 4. Same random policy and episode length for both. The target is four moves away in 3×3 rooms and six in 4×4.
+
+</Figure>
+
+With seven positive examples, return conditioning has almost nothing to imitate. That's the likely cause, though not an isolated one: the target distance and coordinate scaling also changed. The broader lesson is about offline RL. With random data collection, you can't make the task harder without also starving the dataset of success, so this run stopped testing the architecture.
+
+## Conclusion and limitations
+
+On 3×3 Key-to-Door, a looped block matches a four-block Decision Transformer at a quarter of the parameters, but so does one plain block, so the experiment never reached the point where recurrent depth matters. Input injection looked important in early runs, but code drift means it isn't established. The 4×4 version failed for a reason that has nothing to do with the models: random collection produced almost no successful episodes.
+
+What this can't tell you:
+
+- **One seed throughout**, so no run-to-run variance; the four-loop drop could be noise.
+- **Loop count is tied to the loss weighting**, and the 3×3 and 4×4 standard baselines used different objectives.
+- **No out-of-distribution test.** Training and evaluation share the same 16 key–door problems.
+- **A local reconstruction** of Key-to-Door, not the paper's benchmark.
+
+### Next steps
+
+1. **Fix coverage first.** Mix random episodes with a scripted shortest-path policy at 1%, 5% and 10% success, to separate “not enough demonstrations” from “can't use them”. Stratify the split by return and report successes per split.
+2. **Make loop counts comparable.** Supervise only the final iteration, or hold the final head's weight fixed across loop counts.
+3. **Three seeds** for the 3×3 sweep, with confidence intervals on rollout success, using the final separate implementations.
+4. **Hopper medium-replay**, dense and delayed reward, as in the original paper, then Walker2d. Atari last.
+5. **Look inside the four-loop failure:** which layouts fail, where policies with different loop counts first disagree, action entropy per iteration, and whether hidden states converge or oscillate.
+
+## References
+
+- Chen et al. [Decision Transformer: Reinforcement Learning via Sequence Modeling](https://proceedings.neurips.cc/paper_files/paper/2021/file/7f489f642a0ddb10272b5c31057f0663-Paper.pdf). NeurIPS 2021. [Code](https://github.com/kzl/decision-transformer).
+- Fu et al. [D4RL: Datasets for Deep Data-Driven Reinforcement Learning](https://arxiv.org/abs/2004.07219). 2020.
+- DeepMind's [Key-to-Door lineage](https://github.com/google-deepmind/deepmind-research/blob/master/tvt/README.md) (TVT).

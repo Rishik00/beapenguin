@@ -1,0 +1,211 @@
+---
+// A figure with a Graph / Table toggle. The graph is a Plotly spec (JSON in
+// public/) drawn by scripts/plots.ts when it scrolls into view; the table slot
+// holds the same numbers as markdown. The default slot is the caption.
+interface Props {
+  title: string;
+  plot: string;
+  height?: number;
+  label?: string;
+}
+
+const { title, plot, height = 420, label = title } = Astro.props;
+const id = `fig-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<figure-views>
+  <figure class="fig">
+    <div class="shell">
+      <div class="toolbar">
+        <span class="name">{title}</span>
+        <div class="controls" role="group" aria-label={`${title}: view`}>
+          <button type="button" data-view="graph" aria-pressed="true" aria-controls={`${id}-graph`}>Graph</button>
+          <button type="button" data-view="table" aria-pressed="false" aria-controls={`${id}-table`}>Table</button>
+        </div>
+      </div>
+      <div class="body">
+        <div id={`${id}-graph`} data-view-panel="graph">
+          <div class="plot" data-plot={plot} style={`--plot-height: ${height}px`} role="img" aria-label={label}></div>
+        </div>
+        <div id={`${id}-table`} data-view-panel="table" hidden tabindex="0" role="region" aria-label={`${title}: table`}>
+          <slot name="table" />
+        </div>
+      </div>
+    </div>
+    <figcaption><slot /></figcaption>
+  </figure>
+</figure-views>
+
+<script>
+  import { initPlots } from '../scripts/plots';
+
+  class FigureViews extends HTMLElement {
+    connectedCallback() {
+      const body = this.querySelector<HTMLElement>('.body')!;
+      const panels = [...this.querySelectorAll<HTMLElement>('[data-view-panel]')];
+      // The body eases between the two panels' natural heights.
+      const measure = () => {
+        const shown = panels.find((p) => !p.hidden);
+        const h = shown?.getBoundingClientRect().height ?? 0;
+        if (h > 0) body.style.setProperty('--view-height', `${h}px`);
+      };
+      new ResizeObserver(measure).observe(panels[0]);
+      new ResizeObserver(measure).observe(panels[1]);
+      this.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((button) =>
+        button.addEventListener('click', () => {
+          const view = button.dataset.view;
+          panels.forEach((p) => (p.hidden = p.dataset.viewPanel !== view));
+          this.querySelectorAll('[data-view]').forEach((b) =>
+            b.setAttribute('aria-pressed', String((b as HTMLElement).dataset.view === view)),
+          );
+          measure();
+          if (view === 'graph') requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+        }),
+      );
+      measure();
+    }
+  }
+
+  if (!customElements.get('figure-views')) customElements.define('figure-views', FigureViews);
+  initPlots();
+</script>
+
+<style is:global>
+  figure-views {
+    display: block;
+  }
+
+  .prose figure.fig {
+    margin: 2.25em 0;
+  }
+
+  .fig .shell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--raised);
+    overflow: hidden;
+  }
+
+  .fig .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.9rem 0.6rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--sans);
+  }
+
+  .fig .name {
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .fig .controls {
+    display: flex;
+    flex: none;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 8px;
+    background: var(--sunken);
+  }
+
+  .fig .controls button {
+    font: inherit;
+    font-size: 12px;
+    padding: 0.25rem 0.75rem;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .fig .controls button:hover {
+    color: var(--ink);
+  }
+
+  .fig .controls button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .fig .body {
+    height: var(--view-height, auto);
+    overflow: hidden;
+    transition: height 0.3s var(--ease);
+  }
+
+  .fig [data-view-panel] {
+    padding: 0.75rem;
+  }
+
+  .fig [data-view-panel][hidden] {
+    display: none;
+  }
+
+  .fig [data-view-panel]:not([hidden]) {
+    animation: fig-view 0.22s ease-out;
+  }
+
+  @keyframes fig-view {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .fig .plot {
+    width: 100%;
+    min-height: var(--plot-height, 420px);
+  }
+
+  .fig .plot[data-state='error'] {
+    display: grid;
+    place-items: center;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .fig [data-view-panel='table'] table {
+    margin: 0;
+  }
+
+  .fig [data-view-panel='table'] table + table {
+    margin-top: 1.25rem;
+  }
+
+  .fig [data-view-panel='table'] p {
+    margin: 0.75rem 0 0;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  .prose .fig figcaption {
+    margin-top: 0.7rem;
+  }
+
+  @media (max-width: 600px) {
+    .fig .toolbar {
+      padding: 0.5rem 0.6rem 0.5rem 0.8rem;
+    }
+
+    .fig [data-view-panel] {
+      padding: 0.4rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fig .body {
+      transition: none;
+    }
+
+    .fig [data-view-panel] {
+      animation: none !important;
+    }
+  }
+</style>

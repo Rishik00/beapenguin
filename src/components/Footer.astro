@@ -1,0 +1,16 @@
+---
+import { profile } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="wrap">© {year} {profile.name}</footer>
+
+<style>
+  footer {
+    padding-block: 1.75rem 2.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>

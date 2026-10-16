@@ -1,0 +1,14 @@
+---
+import Article from '../../components/Article.astro';
+import { getExperiments } from '../../utils';
+
+export async function getStaticPaths() {
+  const experiments = await getExperiments();
+  return experiments.map((entry, i) => ({
+    params: { id: entry.id },
+    props: { entry, newer: experiments[i - 1], older: experiments[i + 1] },
+  }));
+}
+---
+
+<Article {...Astro.props} base="/experiments" label="Experiments" />

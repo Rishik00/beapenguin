@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fmtDate, getExperimentList } from '../../utils';
+
+const experiments = await getExperimentList();
+---
+
+<Base title="Experiments" description="Write-ups of experiments, including the ones that didn't work.">
+  <header class="page-head">
+    <h1>Experiments</h1>
+    <p>Write-ups of what I ran and what came out of it, including the ones that didn't work.</p>
+  </header>
+
+  <ul class="rows list">
+    {
+      experiments.map((e) => (
+        <li>
+          <a class="row exp" href={e.href}>
+            <span class="meta">{fmtDate(e.date)}</span>
+            <span class="title">{e.title}</span>
+            <span class="arrow">{e.where ? '↗' : '→'}</span>
+            <p class="desc">{e.summary}</p>
+            {e.where && <span class="where">On {e.where}</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .list {
+    border-top: 1px solid var(--line);
+  }
+
+  .exp {
+    padding-block: 1.4rem;
+  }
+
+  .exp .title {
+    font-size: 1.05rem;
+  }
+
+  .exp .desc {
+    max-width: 40rem;
+    margin-top: 0.25rem;
+  }
+
+  .where {
+    grid-column: 2;
+    margin-top: 0.4rem;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 560px) {
+    .where {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
