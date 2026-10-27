@@ -18,13 +18,12 @@ const { entry, base, label, newer, older } = Astro.props;
 const { Content, headings } = await render(entry);
 const toc = headings.filter((h) => h.depth === 2);
 const minutes = readingMinutes(entry.body);
-const data = entry.data as Entry['data'] & { code?: string; logs?: string };
+const data = entry.data as Entry['data'] & { code?: string; logs?: string; original?: string };
 ---
 
 <Base title={data.title} description={data.summary} wide>
   <div class="layout">
     <aside class="toc" aria-label="Contents">
-      <a href={base} class="back">← {label}</a>
       {
         toc.length > 0 && (
           <nav>
@@ -42,7 +41,7 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
     </aside>
 
     <article>
-      <a href={base} class="back mobile">← {label}</a>
+      <a href={base} class="back">← {label}</a>
       <header>
         <h1>{data.title}</h1>
         <p class="summary">{data.summary}</p>
@@ -51,6 +50,7 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
           <span>{minutes} min read</span>
           {data.code && <a class="u" href={data.code}>Code ↗</a>}
           {data.logs && <a class="u" href={data.logs}>Logs ↗</a>}
+          {data.original && <a class="u" href={data.original}>Originally on Medium ↗</a>}
         </p>
       </header>
 
@@ -120,6 +120,8 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
   }
 
   .back {
+    display: inline-block;
+    margin-bottom: 2.5rem;
     font-size: 13.5px;
     color: var(--muted);
     transition: color 0.2s;
@@ -127,11 +129,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
 
   .back:hover {
     color: var(--ink);
-  }
-
-  .back.mobile {
-    display: inline-block;
-    margin-bottom: 2rem;
   }
 
   @media (min-width: 1180px) {
@@ -189,10 +186,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
       bottom: 0;
       width: 1.5px;
       background: var(--ink);
-    }
-
-    .back.mobile {
-      display: none;
     }
   }
 

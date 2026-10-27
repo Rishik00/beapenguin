@@ -16,13 +16,16 @@ export const nav = [
   { href: '/projects', label: 'Projects' },
 ];
 
-// Home page. Placeholder bio.
+// Home page. Intro restored from the original site.
 export const intro = {
   role: 'Researcher',
   org: { name: 'Mercity', href: 'https://www.mercity.ai' },
   // Experiment shown in the card under the portrait.
   featured: 'whisper-noise-hallucination',
-  bio: 'I work on interpretability, model architectures, and reproducing papers from their text. I write up every experiment here, including the ones that failed.',
+  bio: [
+    'After four years in a Computer Science degree, I realised that I like computers. That led me into building and researching Machine Learning and Low-Level Systems.',
+    'Oppenheimer once said, “If I can combine physics and New Mexico, my life would be ideal.” For me, it’s: “If I can combine Interpretability and theoretical mathematics, I’ll be very happy.”',
+  ],
 };
 
 export type Role = {
@@ -91,6 +94,7 @@ export const papers: Paper[] = [
     venue: 'arXiv preprint',
     year: '2026',
     href: 'https://arxiv.org/abs/2606.09936',
+    code: 'https://github.com/Bhavith-Chandra/WorldModelLens',
   },
   {
     title: 'TreeFormer: An Ensemble Framework Integrating Language and Tabular Features for Phishing URL Classification',
@@ -115,8 +119,7 @@ export const papers: Paper[] = [
   },
 ];
 
-// Research posts published elsewhere. They appear in the Experiments list
-// (linking out) and under Work → Writing.
+// Research posts published elsewhere, linked from the Experiments list.
 export const externalPosts = [
   {
     title: 'Online Topic Guardrails with Sparse Autoencoders: A Research Log',
@@ -152,60 +155,94 @@ export const externalPosts = [
   },
 ];
 
-export const writing = [
-  ...externalPosts.map((p) => ({ title: p.title, where: `${p.where} Research`, href: p.href })),
-  {
-    title: 'So, about Base64',
-    where: 'Substack',
-    href: 'https://apenguins2cents.substack.com/p/so-about-base64',
-  },
-];
-
 export const openSource = [
   {
     name: 'TransformerLens',
-    what: '3 merged PRs: Qwen2 and OLMo adapter tests, Pythia adapter removal.',
+    what: '3 merged PRs: adapter tests for Qwen2 and OLMo, and removal of the unused Pythia adapter.',
+    prs: [
+      { label: '#1309 · Qwen2 adapter tests', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1309' },
+      { label: '#1330 · OLMo adapter test', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1330' },
+      { label: '#1332 · Remove unused Pythia adapter', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1332' },
+    ],
     href: 'https://github.com/TransformerLensOrg/TransformerLens/pulls?q=author%3ARishik00',
   },
   {
     name: 'WorldModelLens',
     what: 'Core contributor. Codebase cleanup and I-JEPA probing.',
-    href: 'https://github.com/Rishik00', // TODO: repo URL
+    prs: [],
+    href: 'https://github.com/Bhavith-Chandra/WorldModelLens',
   },
 ];
 
 export type Project = {
   name: string;
-  kind: 'Product' | 'Library' | 'Tool';
+  kind: 'Research' | 'Library' | 'Tool';
   blurb: string;
   stack: string[];
   href?: string;
   live?: string;
-  // Screenshot in public/, e.g. '/projects/readxiv.png'. Products show a placeholder until set.
+  // Optional real screenshot in public/, e.g. '/projects/readxiv.png'.
   image?: string;
 };
 
 export const projects: Project[] = [
   {
+    name: 'interp-sglang',
+    kind: 'Research',
+    blurb: 'A Mini-SGLang fork for interpretability, with prefill activation capture for Qwen3 and Llama.',
+    stack: ['Python', 'CUDA'],
+    href: 'https://github.com/Rishik00/interp-sglang',
+  },
+  {
+    name: 'jepa-lens',
+    kind: 'Research',
+    blurb: 'Layer-wise I-JEPA representation capture and probing across mask geometries and image augmentations.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Rishik00/jepa-lens',
+  },
+  {
+    name: 'trajex',
+    kind: 'Research',
+    blurb: 'Experiments on the velocity of representations in language models.',
+    stack: ['Python'],
+    href: 'https://github.com/Rishik00/trajex',
+  },
+  {
+    name: 'WorldModelLens',
+    kind: 'Research',
+    blurb: 'Interpretability tools for world models. Core contributor, working on codebase cleanup and I-JEPA probing.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Bhavith-Chandra/WorldModelLens',
+  },
+  {
+    name: 'SAE Guardrails',
+    kind: 'Research',
+    blurb: 'Online topic detection from Gemma 3 activations, comparing sparse autoencoder features with raw hidden states.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Mercity-AI/SAE-Guardrails',
+  },
+  {
+    name: 'Dense model pretraining',
+    kind: 'Research',
+    blurb: 'Pretraining 1B models with Kimi Delta Attention and LongCat n-gram embeddings, followed by compression and evaluation.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Mercity-AI/MoE-Runs',
+  },
+  {
     name: 'ReadXiv',
-    kind: 'Product',
+    kind: 'Tool',
     blurb: 'A fast reader for arXiv papers. Collect, annotate, and publish reading notes to Paper Trails.',
     stack: ['TypeScript', 'React'], // TODO
     href: 'https://github.com/Rishik00/ReadXiv',
     live: 'https://readxiv-page.vercel.app/',
+    image: '/projects/readxiv.png',
   },
   {
     name: 'Tron',
-    kind: 'Product',
+    kind: 'Tool',
+    image: '/projects/tron.png',
     blurb: 'A keyboard-first layer for managing Chromium tabs.',
     stack: ['TypeScript', 'Chrome APIs'], // TODO
-  },
-  {
-    name: 'Folio',
-    kind: 'Product',
-    blurb: 'A research folio backed by R2, with stable public links to PDFs.',
-    stack: ['Cloudflare Workers', 'R2'],
-    href: 'https://github.com/Rishik00/why-cloud',
   },
   {
     name: 'nanoCTM',
@@ -230,32 +267,14 @@ export const projects: Project[] = [
   },
   {
     name: 'forscher',
-    kind: 'Tool',
+    kind: 'Research',
     blurb: 'A harness for exploring codebases.',
     stack: ['Python'], // TODO
     href: 'https://github.com/Rishik00/forscher',
   },
-  {
-    name: 'quietter',
-    kind: 'Tool',
-    blurb: 'An X-like feed for private diary logs.',
-    stack: ['TypeScript'], // TODO
-    href: 'https://github.com/Rishik00/quietter',
-  },
-  {
-    name: 'skillx',
-    kind: 'Tool',
-    blurb: 'Manage and share agent skills.', // TODO
-    stack: ['TypeScript'], // TODO
-    href: 'https://github.com/Rishik00/skillx',
-  },
-  {
-    name: 'idea-go',
-    kind: 'Tool',
-    blurb: 'A tiny idea log that syncs with Notion.',
-    stack: ['Go'],
-    href: 'https://github.com/Rishik00/idea-go',
-  },
+
+
+
 ];
 
 export const archive = [
@@ -275,7 +294,7 @@ export type Build = {
   year: string;
 };
 
-// Small builds, kernels and solutions, shown at the bottom of Projects.
+// Small builds, kernels and solutions.
 export const builds: Build[] = [
   { title: 'A ray tracer, from scratch', kind: 'Build', blurb: 'Spheres, materials, depth of field. 48 renders and counting.', year: '2026' }, // TODO: link
   { title: 'TritonLab', kind: 'Kernels', blurb: 'A playground for Triton kernels.', href: 'https://github.com/Rishik00/TritonLab', year: '2025' },

@@ -1,19 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
-import { openSource, papers, roles, writing } from '../data/site';
+import { openSource, papers, roles } from '../data/site';
 
 const tabs = [
   { id: 'experience', label: 'Experience' },
   { id: 'papers', label: 'Papers' },
-  { id: 'writing', label: 'Writing' },
   { id: 'open-source', label: 'Open source' },
 ];
 ---
 
-<Base title="Work" description="Roles, papers, published writing and open-source contributions.">
+<Base title="Work" description="Roles, papers and open-source contributions.">
   <header class="page-head">
     <h1>Work</h1>
-    <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p>
+    {/* <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p> */}
   </header>
 
   <div class="work">
@@ -99,33 +98,24 @@ const tabs = [
         </p>
       </section>
 
-      <section class="panel" role="tabpanel" id="panel-writing" aria-labelledby="tab-writing" hidden>
-        <ul class="rows">
-          {
-            writing.map((w) => (
-              <li>
-                <a class="row" href={w.href}>
-                  <span class="meta">{w.where}</span>
-                  <span class="title">{w.title}</span>
-                  <span class="arrow">↗</span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </section>
-
       <section class="panel" role="tabpanel" id="panel-open-source" aria-labelledby="tab-open-source" hidden>
         <ul class="rows">
           {
             openSource.map((o) => (
               <li>
-                <a class="row" href={o.href}>
+                <div class="row">
                   <span class="meta">Contributor</span>
-                  <span class="title">{o.name}</span>
+                  <a class="title u" href={o.href}>{o.name}</a>
                   <span class="arrow">↗</span>
-                  <p class="desc">{o.what}</p>
-                </a>
+                  <div class="desc">
+                    <p>{o.what}</p>
+                    {o.prs.length > 0 && (
+                      <ul class="contributions">
+                        {o.prs.map((pr) => <li><a class="u" href={pr.href}>{pr.label}</a></li>)}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </li>
             ))
           }
@@ -176,8 +166,7 @@ const tabs = [
     column-gap: 3rem;
   }
 
-  /* All panels share one cell, so the area is as tall as the longest panel
-     and the tabs stay put (vertically centred) when switching. */
+  /* Anchor the controls at the panel's top so switching sections never moves them. */
   .panels {
     grid-area: panels;
     display: grid;
@@ -189,19 +178,11 @@ const tabs = [
   }
 
   .panel[hidden] {
-    display: block;
-    visibility: hidden;
+    display: none;
   }
 
   .panel:not([hidden]) {
     animation: swap 0.4s var(--ease) both;
-  }
-
-  @media (max-width: 760px) {
-    /* On phones, size to the visible panel instead of the tallest one. */
-    .panel[hidden] {
-      display: none;
-    }
   }
 
   @keyframes swap {
@@ -221,9 +202,22 @@ const tabs = [
     font-size: 14px;
   }
 
+  .desc p {
+    margin: 0;
+  }
+
+  .contributions {
+    margin: 0.65rem 0 0;
+    padding-left: 1.1rem;
+  }
+
+  .contributions li + li {
+    margin-top: 0.3rem;
+  }
+
   .tabs {
     grid-area: tabs;
-    align-self: center;
+    align-self: start;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -236,7 +230,7 @@ const tabs = [
     text-align: left;
     cursor: pointer;
     padding: 0.55rem 1rem;
-    border-radius: 999px;
+    border-radius: 4px;
     border: 1px solid var(--line-strong);
     background: var(--raised);
     color: var(--ink-2);
