@@ -2,19 +2,18 @@
 import Base from '../layouts/Base.astro';
 import { archive, builds, projects } from '../data/site';
 
-const products = projects.filter((p) => p.kind === 'Product');
+const tools = projects.filter((p) => p.kind === 'Tool');
 const groups = [
   { title: 'Research', items: projects.filter((p) => p.kind === 'Research') },
   { title: 'Libraries', items: projects.filter((p) => p.kind === 'Library') },
-  { title: 'Tools I built for myself', items: projects.filter((p) => p.kind === 'Tool') },
 ];
 const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
 ---
 
-<Base title="Projects" description="Products, libraries, tools and small builds.">
+<Base title="Projects" description="Research, libraries, tools and small builds.">
   <header class="page-head">
     <h1>Projects</h1>
-    <p>Products, libraries pulled out of research code, tools, and things built for fun.</p>
+    <p>Research, libraries pulled out of research code, tools, and things built for fun.</p>
   </header>
 
   {
@@ -87,10 +86,10 @@ const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
   </section>
 
   <section class="section">
-    <div class="section-title"><h2>Products</h2></div>
-    <div class="cards">
+    <div class="section-title"><h2>Tools</h2></div>
+    <div class="cards tools">
       {
-        products.map((p) => {
+        tools.map((p) => {
           const href = linkOf(p);
           const Tag = href ? 'a' : 'div';
           return (
@@ -117,6 +116,10 @@ const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
 </Base>
 
 <style>
+  .tools {
+    align-items: start;
+  }
+
   .shot {
     width: 100%;
     aspect-ratio: 16 / 10;

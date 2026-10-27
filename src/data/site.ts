@@ -24,7 +24,7 @@ export const intro = {
   featured: 'whisper-noise-hallucination',
   bio: [
     'After four years in a Computer Science degree, I realised that I like computers. That led me into building and researching Machine Learning and Low-Level Systems.',
-    'Oppenheimer once said, “If I can combine physics and New Mexico, my life would be ideal.” For me, it’s: “If I can combine Robotics, Reinforcement Learning, Topology, and Deep Learning, I’ll be very happy.”',
+    'Oppenheimer once said, “If I can combine physics and New Mexico, my life would be ideal.” For me, it’s: “If I can combine Interpretability and theoretical mathematics, I’ll be very happy.”',
   ],
 };
 
@@ -168,19 +168,25 @@ export const writing = [
 export const openSource = [
   {
     name: 'TransformerLens',
-    what: '3 merged PRs: Qwen2 and OLMo adapter tests, Pythia adapter removal.',
+    what: '3 merged PRs: adapter tests for Qwen2 and OLMo, and removal of the unused Pythia adapter.',
+    prs: [
+      { label: '#1309 · Qwen2 adapter tests', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1309' },
+      { label: '#1330 · OLMo adapter test', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1330' },
+      { label: '#1332 · Remove unused Pythia adapter', href: 'https://github.com/TransformerLensOrg/TransformerLens/pull/1332' },
+    ],
     href: 'https://github.com/TransformerLensOrg/TransformerLens/pulls?q=author%3ARishik00',
   },
   {
     name: 'WorldModelLens',
     what: 'Core contributor. Codebase cleanup and I-JEPA probing.',
+    prs: [],
     href: 'https://github.com/Bhavith-Chandra/WorldModelLens',
   },
 ];
 
 export type Project = {
   name: string;
-  kind: 'Research' | 'Product' | 'Library' | 'Tool';
+  kind: 'Research' | 'Library' | 'Tool';
   blurb: string;
   stack: string[];
   href?: string;
@@ -190,6 +196,27 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    name: 'interp-sglang',
+    kind: 'Research',
+    blurb: 'A Mini-SGLang fork for interpretability, with prefill activation capture for Qwen3 and Llama.',
+    stack: ['Python', 'CUDA'],
+    href: 'https://github.com/Rishik00/interp-sglang',
+  },
+  {
+    name: 'jepa-lens',
+    kind: 'Research',
+    blurb: 'Layer-wise I-JEPA representation capture and probing across mask geometries and image augmentations.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Rishik00/jepa-lens',
+  },
+  {
+    name: 'trajex',
+    kind: 'Research',
+    blurb: 'Experiments on the velocity of representations in language models.',
+    stack: ['Python'],
+    href: 'https://github.com/Rishik00/trajex',
+  },
   {
     name: 'WorldModelLens',
     kind: 'Research',
@@ -213,24 +240,18 @@ export const projects: Project[] = [
   },
   {
     name: 'ReadXiv',
-    kind: 'Product',
+    kind: 'Tool',
     blurb: 'A fast reader for arXiv papers. Collect, annotate, and publish reading notes to Paper Trails.',
     stack: ['TypeScript', 'React'], // TODO
     href: 'https://github.com/Rishik00/ReadXiv',
     live: 'https://readxiv-page.vercel.app/',
+    image: '/projects/readxiv.png',
   },
   {
     name: 'Tron',
-    kind: 'Product',
+    kind: 'Tool',
     blurb: 'A keyboard-first layer for managing Chromium tabs.',
     stack: ['TypeScript', 'Chrome APIs'], // TODO
-  },
-  {
-    name: 'Folio',
-    kind: 'Product',
-    blurb: 'A research folio backed by R2, with stable public links to PDFs.',
-    stack: ['Cloudflare Workers', 'R2'],
-    href: 'https://github.com/Rishik00/why-cloud',
   },
   {
     name: 'nanoCTM',
@@ -260,27 +281,9 @@ export const projects: Project[] = [
     stack: ['Python'], // TODO
     href: 'https://github.com/Rishik00/forscher',
   },
-  {
-    name: 'quietter',
-    kind: 'Tool',
-    blurb: 'An X-like feed for private diary logs.',
-    stack: ['TypeScript'], // TODO
-    href: 'https://github.com/Rishik00/quietter',
-  },
-  {
-    name: 'skillx',
-    kind: 'Tool',
-    blurb: 'Manage and share agent skills.', // TODO
-    stack: ['TypeScript'], // TODO
-    href: 'https://github.com/Rishik00/skillx',
-  },
-  {
-    name: 'idea-go',
-    kind: 'Tool',
-    blurb: 'A tiny idea log that syncs with Notion.',
-    stack: ['Go'],
-    href: 'https://github.com/Rishik00/idea-go',
-  },
+
+
+
 ];
 
 export const archive = [
@@ -300,7 +303,7 @@ export type Build = {
   year: string;
 };
 
-// Small builds, kernels and solutions, shown at the bottom of Projects.
+// Small builds, kernels and solutions.
 export const builds: Build[] = [
   { title: 'A ray tracer, from scratch', kind: 'Build', blurb: 'Spheres, materials, depth of field. 48 renders and counting.', year: '2026' }, // TODO: link
   { title: 'TritonLab', kind: 'Kernels', blurb: 'A playground for Triton kernels.', href: 'https://github.com/Rishik00/TritonLab', year: '2025' },

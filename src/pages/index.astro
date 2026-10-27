@@ -12,7 +12,7 @@ const index = [
   { href: '/experiments', name: 'Experiments', what: 'Write-ups of what I ran and what came out', count: experiments.length },
   { href: '/random', name: 'Random', what: 'The blog', count: posts.length },
   { href: '/work', name: 'Work', what: 'Roles, papers and open source', count: roles.length + papers.length },
-  { href: '/projects', name: 'Projects', what: 'Products, libraries and small builds', count: projects.length + builds.length },
+  { href: '/projects', name: 'Projects', what: 'Research, libraries and tools', count: projects.length + builds.length },
 ];
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -122,7 +122,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   .portrait {
     grid-area: portrait;
-    margin: 0;
+    margin: 1.25rem 0 0;
     padding: 0.65rem;
     background: var(--raised);
     border: 1px solid var(--line);
@@ -388,6 +388,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
 
     .featured {
+      margin-top: 0;
+    }
+
+    .portrait {
       margin-top: 0;
     }
 

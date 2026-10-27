@@ -24,7 +24,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
 <Base title={data.title} description={data.summary} wide>
   <div class="layout">
     <aside class="toc" aria-label="Contents">
-      <a href={base} class="back">← {label}</a>
       {
         toc.length > 0 && (
           <nav>
@@ -42,7 +41,7 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
     </aside>
 
     <article>
-      <a href={base} class="back mobile">← {label}</a>
+      <a href={base} class="back">← {label}</a>
       <header>
         <h1>{data.title}</h1>
         <p class="summary">{data.summary}</p>
@@ -121,6 +120,8 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
   }
 
   .back {
+    display: inline-block;
+    margin-bottom: 2.5rem;
     font-size: 13.5px;
     color: var(--muted);
     transition: color 0.2s;
@@ -128,11 +129,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
 
   .back:hover {
     color: var(--ink);
-  }
-
-  .back.mobile {
-    display: inline-block;
-    margin-bottom: 2rem;
   }
 
   @media (min-width: 1180px) {
@@ -190,10 +186,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
       bottom: 0;
       width: 1.5px;
       background: var(--ink);
-    }
-
-    .back.mobile {
-      display: none;
     }
   }
 
