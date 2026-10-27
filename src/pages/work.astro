@@ -1,16 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
-import { openSource, papers, roles, writing } from '../data/site';
+import { openSource, papers, roles } from '../data/site';
 
 const tabs = [
   { id: 'experience', label: 'Experience' },
   { id: 'papers', label: 'Papers' },
-  { id: 'writing', label: 'Writing' },
   { id: 'open-source', label: 'Open source' },
 ];
 ---
 
-<Base title="Work" description="Roles, papers, published writing and open-source contributions.">
+<Base title="Work" description="Roles, papers and open-source contributions.">
   <header class="page-head">
     <h1>Work</h1>
     {/* <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p> */}
@@ -97,22 +96,6 @@ const tabs = [
         <p class="more">
           <a class="u" href="https://scholar.google.com/citations?user=jW4OgYwAAAAJ&hl=en">All papers on Google Scholar ↗</a>
         </p>
-      </section>
-
-      <section class="panel" role="tabpanel" id="panel-writing" aria-labelledby="tab-writing" hidden>
-        <ul class="rows">
-          {
-            writing.map((w) => (
-              <li>
-                <a class="row" href={w.href}>
-                  <span class="meta">{w.where}</span>
-                  <span class="title">{w.title}</span>
-                  <span class="arrow">↗</span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
       </section>
 
       <section class="panel" role="tabpanel" id="panel-open-source" aria-labelledby="tab-open-source" hidden>

@@ -2,7 +2,7 @@
 import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { builds, intro, links, papers, profile, projects, roles } from '../data/site';
-import { fmtDate, getExperimentList, getPosts } from '../utils';
+import { getExperimentList, getPosts } from '../utils';
 
 const experiments = await getExperimentList();
 const posts = await getPosts('random');
@@ -52,7 +52,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       {
         featured && (
           <a class="featured fade" style="--i: 5" href={`/experiments/${featured.id}`}>
-            <span class="label">Featured · {fmtDate(featured.data.date)}</span>
+            <span class="label">Featured</span>
             <span class="title">{featured.data.title}</span>
             <span class="summary">{featured.data.summary}</span>
             <span class="read">Read the write-up →</span>
@@ -122,7 +122,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   .portrait {
     grid-area: portrait;
-    margin: 1.25rem 0 0;
+    margin: 4.5rem 0 0;
     padding: 0.65rem;
     background: var(--raised);
     border: 1px solid var(--line);

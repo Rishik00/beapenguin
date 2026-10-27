@@ -119,8 +119,7 @@ export const papers: Paper[] = [
   },
 ];
 
-// Research posts published elsewhere. They appear in the Experiments list
-// (linking out) and under Work → Writing.
+// Research posts published elsewhere, linked from the Experiments list.
 export const externalPosts = [
   {
     title: 'Online Topic Guardrails with Sparse Autoencoders: A Research Log',
@@ -153,15 +152,6 @@ export const externalPosts = [
     date: '2026-07-07',
     where: 'Mercity',
     href: 'https://www.mercity.ai/research/building-llm-guardrails-with-saes',
-  },
-];
-
-export const writing = [
-  ...externalPosts.map((p) => ({ title: p.title, where: `${p.where} Research`, href: p.href })),
-  {
-    title: 'So, about Base64',
-    where: 'Substack',
-    href: 'https://apenguins2cents.substack.com/p/so-about-base64',
   },
 ];
 
@@ -250,6 +240,7 @@ export const projects: Project[] = [
   {
     name: 'Tron',
     kind: 'Tool',
+    image: '/projects/tron.png',
     blurb: 'A keyboard-first layer for managing Chromium tabs.',
     stack: ['TypeScript', 'Chrome APIs'], // TODO
   },
@@ -276,7 +267,7 @@ export const projects: Project[] = [
   },
   {
     name: 'forscher',
-    kind: 'Tool',
+    kind: 'Research',
     blurb: 'A harness for exploring codebases.',
     stack: ['Python'], // TODO
     href: 'https://github.com/Rishik00/forscher',
