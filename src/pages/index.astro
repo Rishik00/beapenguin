@@ -25,7 +25,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <img src="/avatar.jpg" alt="A sleeping penguin" width="736" height="736" />
           <span class="zzz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span>
         </div>
-        <figcaption>A mostly sane penguin</figcaption>
       </figure>
 
 
@@ -34,7 +33,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <p class="tagline fade" style="--i: 2">
         {intro.role} at <a href={intro.org.href}>{intro.org.name}</a>
       </p>
-      <p class="bio fade" style="--i: 3">{intro.bio}</p>
+      <div class="bio fade" style="--i: 3">
+        {intro.bio.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
       <ul class="links fade" style="--i: 4">
         {
           links.map((l) => (
@@ -81,7 +82,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 <style>
   /* Four cells: the featured card and the index share a row, so their tops line up. */
   .home {
-    --index-head: calc(13px * 1.6 + 0.4rem);
     display: grid;
     grid-template-columns: 16rem minmax(0, 1fr);
     grid-template-areas:
@@ -123,7 +123,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .portrait {
     grid-area: portrait;
     margin: 0;
-    padding: 0.65rem 0.65rem 0.55rem;
+    padding: 0.65rem;
     background: var(--raised);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -202,17 +202,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
   }
 
-  figcaption {
-    margin-top: 0.5rem;
-    padding-inline: 0.15rem;
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-
-  /* Pushed down past the index's top rule and heading to line up with its first row. */
+  /* Align the featured card with the index's top rule. */
   .featured {
     grid-area: featured;
-    margin-top: calc(1px + 1.75rem + var(--index-head));
+    margin-top: 0;
     display: grid;
     padding: 1.3rem 1.3rem 1.25rem;
     border: 1px solid var(--line);
@@ -312,6 +305,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
     margin: 1.3rem 0 0;
     padding: 0;
     font-size: 14px;
+  }
+
+  .bio p {
+    margin: 0;
+  }
+
+  .bio p + p {
+    margin-top: 1rem;
   }
 
   .index {

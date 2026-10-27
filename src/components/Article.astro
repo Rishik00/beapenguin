@@ -18,7 +18,7 @@ const { entry, base, label, newer, older } = Astro.props;
 const { Content, headings } = await render(entry);
 const toc = headings.filter((h) => h.depth === 2);
 const minutes = readingMinutes(entry.body);
-const data = entry.data as Entry['data'] & { code?: string; logs?: string };
+const data = entry.data as Entry['data'] & { code?: string; logs?: string; original?: string };
 ---
 
 <Base title={data.title} description={data.summary} wide>
@@ -51,6 +51,7 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string };
           <span>{minutes} min read</span>
           {data.code && <a class="u" href={data.code}>Code ↗</a>}
           {data.logs && <a class="u" href={data.logs}>Logs ↗</a>}
+          {data.original && <a class="u" href={data.original}>Originally on Medium ↗</a>}
         </p>
       </header>
 

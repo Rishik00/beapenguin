@@ -16,13 +16,16 @@ export const nav = [
   { href: '/projects', label: 'Projects' },
 ];
 
-// Home page. Placeholder bio.
+// Home page. Intro restored from the original site.
 export const intro = {
   role: 'Researcher',
   org: { name: 'Mercity', href: 'https://www.mercity.ai' },
   // Experiment shown in the card under the portrait.
   featured: 'whisper-noise-hallucination',
-  bio: 'I work on interpretability, model architectures, and reproducing papers from their text. I write up every experiment here, including the ones that failed.',
+  bio: [
+    'After four years in a Computer Science degree, I realised that I like computers. That led me into building and researching Machine Learning and Low-Level Systems.',
+    'Oppenheimer once said, “If I can combine physics and New Mexico, my life would be ideal.” For me, it’s: “If I can combine Robotics, Reinforcement Learning, Topology, and Deep Learning, I’ll be very happy.”',
+  ],
 };
 
 export type Role = {
@@ -91,6 +94,7 @@ export const papers: Paper[] = [
     venue: 'arXiv preprint',
     year: '2026',
     href: 'https://arxiv.org/abs/2606.09936',
+    code: 'https://github.com/Bhavith-Chandra/WorldModelLens',
   },
   {
     title: 'TreeFormer: An Ensemble Framework Integrating Language and Tabular Features for Phishing URL Classification',
@@ -170,22 +174,43 @@ export const openSource = [
   {
     name: 'WorldModelLens',
     what: 'Core contributor. Codebase cleanup and I-JEPA probing.',
-    href: 'https://github.com/Rishik00', // TODO: repo URL
+    href: 'https://github.com/Bhavith-Chandra/WorldModelLens',
   },
 ];
 
 export type Project = {
   name: string;
-  kind: 'Product' | 'Library' | 'Tool';
+  kind: 'Research' | 'Product' | 'Library' | 'Tool';
   blurb: string;
   stack: string[];
   href?: string;
   live?: string;
-  // Screenshot in public/, e.g. '/projects/readxiv.png'. Products show a placeholder until set.
+  // Optional real screenshot in public/, e.g. '/projects/readxiv.png'.
   image?: string;
 };
 
 export const projects: Project[] = [
+  {
+    name: 'WorldModelLens',
+    kind: 'Research',
+    blurb: 'Interpretability tools for world models. Core contributor, working on codebase cleanup and I-JEPA probing.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Bhavith-Chandra/WorldModelLens',
+  },
+  {
+    name: 'SAE Guardrails',
+    kind: 'Research',
+    blurb: 'Online topic detection from Gemma 3 activations, comparing sparse autoencoder features with raw hidden states.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Mercity-AI/SAE-Guardrails',
+  },
+  {
+    name: 'Dense model pretraining',
+    kind: 'Research',
+    blurb: 'Pretraining 1B models with Kimi Delta Attention and LongCat n-gram embeddings, followed by compression and evaluation.',
+    stack: ['Python', 'PyTorch'],
+    href: 'https://github.com/Mercity-AI/MoE-Runs',
+  },
   {
     name: 'ReadXiv',
     kind: 'Product',

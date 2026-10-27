@@ -4,6 +4,7 @@ import { archive, builds, projects } from '../data/site';
 
 const products = projects.filter((p) => p.kind === 'Product');
 const groups = [
+  { title: 'Research', items: projects.filter((p) => p.kind === 'Research') },
   { title: 'Libraries', items: projects.filter((p) => p.kind === 'Library') },
   { title: 'Tools I built for myself', items: projects.filter((p) => p.kind === 'Tool') },
 ];
@@ -15,39 +16,6 @@ const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
     <h1>Projects</h1>
     <p>Products, libraries pulled out of research code, tools, and things built for fun.</p>
   </header>
-
-  <section class="section">
-    <div class="section-title"><h2>Products</h2></div>
-    <div class="products">
-      {
-        products.map((p) => {
-          const href = linkOf(p);
-          const Tag = href ? 'a' : 'div';
-          return (
-            <Tag class="product" href={href}>
-              {p.image ? (
-                <img class="shot" src={p.image} alt={`Screenshot of ${p.name}`} loading="lazy" />
-              ) : (
-                <div class="shot placeholder">Screenshot</div>
-              )}
-              <div class="product-body">
-                <div class="card-top">
-                  <h3>{p.name}</h3>
-                  <span class="hint">{href ? (p.live ? 'Live ↗' : 'Code ↗') : 'Private'}</span>
-                </div>
-                <p>{p.blurb}</p>
-                <ul class="chips">
-                  {p.stack.map((s) => (
-                    <li class="chip">{s}</li>
-                  ))}
-                </ul>
-              </div>
-            </Tag>
-          );
-        })
-      }
-    </div>
-  </section>
 
   {
     groups.map((g) => (
@@ -117,90 +85,42 @@ const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
       }
     </ul>
   </section>
+
+  <section class="section">
+    <div class="section-title"><h2>Products</h2></div>
+    <div class="cards">
+      {
+        products.map((p) => {
+          const href = linkOf(p);
+          const Tag = href ? 'a' : 'div';
+          return (
+            <Tag class="card" href={href}>
+              {p.image && (
+                <img class="shot" src={p.image} alt={`Screenshot of ${p.name}`} loading="lazy" />
+              )}
+              <div class="card-top">
+                <h3>{p.name}</h3>
+                <span class="hint">{href ? (p.live ? 'Live ↗' : 'Code ↗') : 'Private'}</span>
+              </div>
+              <p>{p.blurb}</p>
+              <ul class="chips">
+                {p.stack.map((s) => (
+                  <li class="chip">{s}</li>
+                ))}
+              </ul>
+            </Tag>
+          );
+        })
+      }
+    </div>
+  </section>
 </Base>
 
 <style>
-  .products {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-    margin-top: 1.25rem;
-  }
-
-  .products > :last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  @media (max-width: 640px) {
-    .products {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .product {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--raised);
-    transition: border-color 0.25s, transform 0.3s var(--ease);
-  }
-
-  a.product:hover {
-    border-color: var(--line-strong);
-    transform: translateY(-2px);
-  }
-
   .shot {
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .shot.placeholder {
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-  }
-
-  /* A lone product sits side by side: screenshot left, text right. */
-  @media (min-width: 641px) {
-    .products > :last-child:nth-child(odd) {
-      flex-direction: row;
-    }
-
-    .products > :last-child:nth-child(odd) .shot {
-      width: 50%;
-      aspect-ratio: 16 / 10;
-      border-bottom: 0;
-      border-right: 1px solid var(--line);
-    }
-  }
-
-  .product-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding: 1.1rem 1.25rem 1.15rem;
-    flex: 1;
-  }
-
-  .product h3 {
-    margin: 0;
-    font-size: 15.5px;
-    font-weight: 600;
-  }
-
-  .product p {
-    margin: 0;
-    color: var(--ink-2);
-    font-size: 14.5px;
-    flex: 1;
-  }
-
-  .product .chips {
-    margin-top: 0.35rem;
+    border-radius: 4px;
   }
 </style>

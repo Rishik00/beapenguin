@@ -13,7 +13,7 @@ const tabs = [
 <Base title="Work" description="Roles, papers, published writing and open-source contributions.">
   <header class="page-head">
     <h1>Work</h1>
-    <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p>
+    {/* <p>Where I've worked, what's been published, and the open-source projects I contribute to.</p> */}
   </header>
 
   <div class="work">
@@ -171,13 +171,12 @@ const tabs = [
 <style>
   .work {
     display: grid;
-    grid-template-columns: 11rem minmax(0, 1fr);
-    grid-template-areas: 'tabs panels';
+    grid-template-columns: minmax(0, 1fr) 11rem;
+    grid-template-areas: 'panels tabs';
     column-gap: 3rem;
   }
 
-  /* All panels share one cell, so the area is as tall as the longest panel
-     and the tabs stay put (vertically centred) when switching. */
+  /* Centre the controls against the visible content, rather than hidden panels. */
   .panels {
     grid-area: panels;
     display: grid;
@@ -189,19 +188,11 @@ const tabs = [
   }
 
   .panel[hidden] {
-    display: block;
-    visibility: hidden;
+    display: none;
   }
 
   .panel:not([hidden]) {
     animation: swap 0.4s var(--ease) both;
-  }
-
-  @media (max-width: 760px) {
-    /* On phones, size to the visible panel instead of the tallest one. */
-    .panel[hidden] {
-      display: none;
-    }
   }
 
   @keyframes swap {
@@ -236,7 +227,7 @@ const tabs = [
     text-align: left;
     cursor: pointer;
     padding: 0.55rem 1rem;
-    border-radius: 999px;
+    border-radius: 4px;
     border: 1px solid var(--line-strong);
     background: var(--raised);
     color: var(--ink-2);

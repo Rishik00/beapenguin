@@ -22,6 +22,7 @@ const random = defineCollection({
     title: z.string(),
     summary: z.string(),
     date: z.coerce.date(),
+    original: z.string().url().optional(),
     draft: z.boolean().default(false),
   }),
 });
