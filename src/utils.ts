@@ -1,5 +1,4 @@
 import { getCollection } from 'astro:content';
-import { externalPosts } from './data/site';
 
 export const fmtDate = (d: Date, style: 'short' | 'long' = 'short') =>
   d.toLocaleDateString('en-GB', {
@@ -15,25 +14,14 @@ export async function getPosts<C extends 'experiments' | 'random'>(collection: C
 
 export const getExperiments = () => getPosts('experiments');
 
-export type ListedExperiment = {
-  title: string;
-  summary: string;
-  date: Date;
-  href: string;
-  // Set for posts hosted elsewhere, e.g. 'Mercity'.
-  where?: string;
-};
-
-// Experiments written here plus research posts published elsewhere, newest first.
-export async function getExperimentList(): Promise<ListedExperiment[]> {
-  const local = (await getExperiments()).map((e) => ({
+// Experiment write-ups hosted on this site, newest first.
+export async function getExperimentList() {
+  return (await getExperiments()).map((e) => ({
     title: e.data.title,
     summary: e.data.summary,
     date: e.data.date,
     href: `/experiments/${e.id}`,
   }));
-  const external = externalPosts.map((p) => ({ ...p, date: new Date(p.date) }));
-  return [...local, ...external].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 }
 
 // Minutes to read the prose of a markdown body at 230 words per minute (a common

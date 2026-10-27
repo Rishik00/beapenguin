@@ -18,13 +18,18 @@ export const nav = [
 
 // Home page. Intro restored from the original site.
 export const intro = {
-  role: 'Researcher',
-  org: { name: 'Mercity', href: 'https://www.mercity.ai' },
   // Experiment shown in the card under the portrait.
   featured: 'whisper-noise-hallucination',
   bio: [
-    'After four years in a Computer Science degree, I realised that I like computers. That led me into building and researching Machine Learning and Low-Level Systems.',
-    'Oppenheimer once said, “If I can combine physics and New Mexico, my life would be ideal.” For me, it’s: “If I can combine Interpretability and theoretical mathematics, I’ll be very happy.”',
+    [
+      { text: 'After four years and a Computer Science degree, I realised that I like computers. Now I work in machine learning.' },
+    ],
+    [
+      { text: 'Oppenheimer once said, ' },
+      { text: '“If I can combine physics and New Mexico, my life would be ideal.”', strong: true },
+      { text: ' For me, it’s: ' },
+      { text: '“If I can combine Interpretability and theoretical mathematics, I’ll be very happy.”', strong: true },
+    ],
   ],
 };
 
@@ -34,6 +39,7 @@ export type Role = {
   period: string;
   blurb: string;
   href?: string;
+  work?: { label: string; href: string }[];
 };
 
 export const roles: Role[] = [
@@ -41,7 +47,7 @@ export const roles: Role[] = [
     org: 'Elemental Research Group',
     title: 'Researcher',
     period: '2026 — Now',
-    blurb: 'Placeholder: one line on what you work on here.', // TODO
+    blurb: 'Working on world model interpretability.',
   },
   {
     org: 'Mercity AI',
@@ -50,18 +56,37 @@ export const roles: Role[] = [
     blurb:
       'Pretraining and evaluating ~1B models from scratch, SAE-based guardrails, soft-prompt alignment, speculative decoding.',
     href: 'https://www.mercity.ai/research',
+    work: [
+      {
+        label: 'Online Topic Guardrails with Sparse Autoencoders: A Research Log',
+        href: 'https://www.mercity.ai/research/online-topic-guardrails-with-saes',
+      },
+      {
+        label: 'Pretraining Dense Models: A Research Log',
+        href: 'https://www.mercity.ai/research/pretraining-dense-models',
+      },
+      {
+        label: 'Classifying Figure Skating Elements from Pose Estimation',
+        href: 'https://www.mercity.ai/blog-post/classifying-figure-skating-elements-from-pose-estimation',
+      },
+      {
+        label: 'Building LLM Guardrails with SAEs',
+        href: 'https://www.mercity.ai/research/building-llm-guardrails-with-saes',
+      },
+    ],
   },
   {
     org: 'Pragya Lab, BITS Goa',
-    title: 'Research collaborator',
+    title: 'Research Intern',
     period: '2025', // TODO
-    blurb: 'Second-order optimization (SahaBose-KFAC) and residual-stream geometry.',
+    blurb: 'Worked on geometric applications for alignment and second order optimizers.',
   },
   {
     org: 'Centre for AI and Robotics, DRDO',
     title: 'Research intern',
-    period: '2024', // TODO
-    blurb: 'Benchmarked tokenizers across Urdu, Chinese and Hindi.',
+    period: '2024 — 2025',
+    blurb:
+      'Developed multilingual NER pretraining pipelines and evaluated heuristic and neural tokenizers across Urdu, Simplified Chinese, and Hindi.',
     href: 'https://github.com/Rishik00/Tokenizer-Study',
   },
 ];
@@ -110,48 +135,6 @@ export const papers: Paper[] = [
     venue: 'Modelling',
     year: '2025',
     href: 'https://doi.org/10.3390/modelling6020032',
-  },
-  {
-    title: 'SahaBose-KFAC', // TODO: full title and authors once it is on arXiv
-    authors: ['R. Mallagundla', 'et al.'],
-    venue: 'In preparation',
-    year: '2026',
-  },
-];
-
-// Research posts published elsewhere, linked from the Experiments list.
-export const externalPosts = [
-  {
-    title: 'Online Topic Guardrails with Sparse Autoencoders: A Research Log',
-    summary:
-      'Small probes on SAE features catch Gemma 3 drifting off topic while it writes. Raw hidden states do as well; the SAE buys a smaller detector whose inputs have names.',
-    date: '2026-10-14',
-    where: 'Mercity',
-    href: 'https://www.mercity.ai/research/online-topic-guardrails-with-saes',
-  },
-  {
-    title: 'Pretraining Dense Models: A Research Log',
-    summary:
-      'Four dense 1B checkpoints on 6B FineWeb tokens to test Kimi Delta Attention and LongCat n-gram embeddings, then grafting, pruning, 4-bit quantization and NER fine-tuning.',
-    date: '2026-09-28',
-    where: 'Mercity',
-    href: 'https://www.mercity.ai/research/pretraining-dense-models',
-  },
-  {
-    title: 'Classifying Figure Skating Elements from Pose Estimation',
-    summary:
-      'Five architectures, one ceiling: jumps that differ only by blade edge are invisible to COCO-17 keypoints. Which class you predict matters about three times more than which model.',
-    date: '2026-07-27',
-    where: 'Mercity',
-    href: 'https://www.mercity.ai/blog-post/classifying-figure-skating-elements-from-pose-estimation',
-  },
-  {
-    title: 'Building LLM Guardrails with SAEs',
-    summary:
-      'Can sparse autoencoder features replace a dedicated topic classifier in a guardrail stack, reading the topic from the model’s activations instead of its output?',
-    date: '2026-07-07',
-    where: 'Mercity',
-    href: 'https://www.mercity.ai/research/building-llm-guardrails-with-saes',
   },
 ];
 

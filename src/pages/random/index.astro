@@ -3,6 +3,12 @@ import Base from '../../layouts/Base.astro';
 import { fmtDate, getPosts } from '../../utils';
 
 const posts = await getPosts('random');
+const titleParts = (title: string) => {
+  const split = title.lastIndexOf(' ');
+  return split === -1
+    ? { lead: '', tail: title }
+    : { lead: title.slice(0, split + 1), tail: title.slice(split + 1) };
+};
 ---
 
 <Base title="Random" description="The blog.">
@@ -14,16 +20,20 @@ const posts = await getPosts('random');
   {
     posts.length > 0 ? (
       <ul class="rows list">
-        {posts.map((p) => (
-          <li>
-            <a class="row" href={`/random/${p.id}`}>
-              <span class="meta">{fmtDate(p.data.date)}</span>
-              <span class="title">{p.data.title}</span>
-              <span class="arrow">→</span>
-              <p class="desc">{p.data.summary}</p>
-            </a>
-          </li>
-        ))}
+        {posts.map((p) => {
+          const title = titleParts(p.data.title);
+          return (
+            <li>
+              <a class="row" href={`/random/${p.id}`}>
+                <span class="meta">{fmtDate(p.data.date)}</span>
+                <span class="title">
+                  {title.lead}<span class="title-end">{title.tail}<span class="title-arrow" aria-hidden="true">↗</span></span>
+                </span>
+                <p class="desc">{p.data.summary}</p>
+              </a>
+            </li>
+          );
+        })}
       </ul>
     ) : (
       <p class="empty">Nothing here yet.</p>
@@ -41,5 +51,17 @@ const posts = await getPosts('random');
     padding: 3rem 0;
     border-top: 1px solid var(--line);
     color: var(--muted);
+  }
+
+  .title-arrow {
+    display: inline-block;
+    margin-left: 0.45em;
+    color: var(--muted);
+    font-size: 0.8em;
+    transform: translateY(-0.08em);
+  }
+
+  .title-end {
+    white-space: nowrap;
   }
 </style>

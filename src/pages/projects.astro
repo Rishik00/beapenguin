@@ -4,7 +4,7 @@ import { archive, builds, projects } from '../data/site';
 
 const tools = projects.filter((p) => p.kind === 'Tool');
 const groups = [
-  { title: 'Research', items: projects.filter((p) => p.kind === 'Research') },
+  { title: 'Random Experiments', items: projects.filter((p) => p.kind === 'Research') },
   { title: 'Libraries', items: projects.filter((p) => p.kind === 'Library') },
 ];
 const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
@@ -13,7 +13,7 @@ const linkOf = (p: (typeof projects)[number]) => p.live ?? p.href;
 <Base title="Projects" description="Research, libraries, tools and small builds.">
   <header class="page-head">
     <h1>Projects</h1>
-    <p>Research, libraries pulled out of research code, tools, and things built for fun.</p>
+    <p>Things I build for fun.</p>
   </header>
 
   {

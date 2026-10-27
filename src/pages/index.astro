@@ -30,13 +30,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
     <section class="intro">
       <h1 class="fade" style="--i: 1">{profile.name}</h1>
-      <p class="tagline fade" style="--i: 2">
-        {intro.role} at <a href={intro.org.href}>{intro.org.name}</a>
-      </p>
-      <div class="bio fade" style="--i: 3">
-        {intro.bio.map((paragraph) => <p>{paragraph}</p>)}
+      <div class="bio fade" style="--i: 2">
+        {intro.bio.map((paragraph) => (
+          <p>{paragraph.map((part) => part.strong ? <strong>{part.text}</strong> : part.text)}</p>
+        ))}
       </div>
-      <ul class="links fade" style="--i: 4">
+      <ul class="links fade" style="--i: 3">
         {
           links.map((l) => (
             <li>
@@ -313,6 +312,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   .bio p + p {
     margin-top: 1rem;
+  }
+
+  .bio strong {
+    color: var(--ink);
+    font-weight: 650;
   }
 
   .index {

@@ -52,7 +52,17 @@ const tabs = [
                   <span class="muted"> · {r.title}</span>
                 </span>
                 <span />
-                <p class="desc">{r.blurb}</p>
+                <div class="desc">
+                  <p>{r.blurb}</p>
+                  {r.work && (
+                    <>
+                      <p class="work-intro">You can find my work here:</p>
+                      <ol class="contributions">
+                        {r.work.map((item) => <li><a class="u" href={item.href}>{item.label}</a></li>)}
+                      </ol>
+                    </>
+                  )}
+                </div>
               </li>
             ))
           }
@@ -209,6 +219,10 @@ const tabs = [
   .contributions {
     margin: 0.65rem 0 0;
     padding-left: 1.1rem;
+  }
+
+  .work-intro {
+    margin-top: 0.7rem !important;
   }
 
   .contributions li + li {

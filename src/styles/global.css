@@ -4,9 +4,9 @@
 /* ---------- tokens ---------- */
 
 :root {
-  --bg: #e8e5de;
-  --raised: #efede7;
-  --sunken: #e1ded6;
+  --bg: #ddd7c8;
+  --raised: #e7e1d3;
+  --sunken: #d2cbbb;
   --line: rgb(28 26 22 / 0.1);
   --line-strong: rgb(28 26 22 / 0.2);
   --ink: #1c1b19;
@@ -39,7 +39,7 @@
   /* Plotly only parses the comma rgba() form. */
   --viz-grid: rgba(28, 26, 22, 0.08);
   --viz-axis: rgba(28, 26, 22, 0.22);
-  --viz-surface: #efede7;
+  --viz-surface: #e7e1d3;
 
   --wrap: 58rem;
   --radius: 10px;
@@ -49,14 +49,14 @@
 }
 
 [data-theme='dark'] {
-  --bg: #1a1a19;
-  --raised: #222221;
-  --sunken: #161615;
-  --line: rgb(255 250 240 / 0.08);
-  --line-strong: rgb(255 250 240 / 0.18);
-  --ink: #e8e5de;
-  --ink-2: #b4b0a8;
-  --muted: #7d7972;
+  --bg: #151915;
+  --raised: #1d221e;
+  --sunken: #101410;
+  --line: rgb(231 236 226 / 0.08);
+  --line-strong: rgb(231 236 226 / 0.17);
+  --ink: #e7e5dc;
+  --ink-2: #b3b8ad;
+  --muted: #778177;
 
   --viz-s1: #3987e5;
   --viz-s2: #d95926;
@@ -65,14 +65,14 @@
   --viz-seq2: #2a78d6;
   --viz-seq3: #6da7ec;
   --viz-seq4: #b7d3f6;
-  --viz-ink: #e8e5de;
-  --viz-ink2: #b4b0a8;
-  --viz-muted: #7d7972;
-  --viz-grid: rgba(255, 250, 240, 0.07);
-  --viz-axis: rgba(255, 250, 240, 0.2);
-  --viz-surface: #222221;
+  --viz-ink: #e7e5dc;
+  --viz-ink2: #b3b8ad;
+  --viz-muted: #778177;
+  --viz-grid: rgba(231, 236, 226, 0.07);
+  --viz-axis: rgba(231, 236, 226, 0.19);
+  --viz-surface: #1d221e;
 
-  --grain-opacity: 0.11;
+  --grain-opacity: 0.075;
   --grain-blend: soft-light;
 
   color-scheme: dark;
@@ -284,6 +284,11 @@ a.row {
 
 .row .title {
   font-weight: 500;
+}
+
+/* Direct title links are grid items; keep their underline as wide as the text. */
+.row > a.title {
+  justify-self: start;
 }
 
 .row .desc {

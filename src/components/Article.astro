@@ -50,7 +50,7 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
           <span>{minutes} min read</span>
           {data.code && <a class="u" href={data.code}>Code ↗</a>}
           {data.logs && <a class="u" href={data.logs}>Logs ↗</a>}
-          {data.original && <a class="u" href={data.original}>Originally on Medium ↗</a>}
+          {data.original && <a class="u" href={data.original}>Medium ↗</a>}
         </p>
       </header>
 
@@ -202,7 +202,6 @@ const data = entry.data as Entry['data'] & { code?: string; logs?: string; origi
     font-size: clamp(2rem, 4.6vw, 2.8rem);
     line-height: 1.1;
     margin: 0 0 1rem;
-    text-wrap: balance;
   }
 
   .summary {
