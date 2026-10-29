@@ -9,10 +9,10 @@ const posts = await getPosts('random');
 const featured = await getEntry('experiments', intro.featured);
 
 const index = [
-  { href: '/experiments', name: 'Experiments', what: 'Write-ups of what I ran and what came out', count: experiments.length },
-  { href: '/random', name: 'Random', what: 'The blog', count: posts.length },
-  { href: '/work', name: 'Work', what: 'Roles, papers and open source', count: roles.length + papers.length },
-  { href: '/projects', name: 'Projects', what: 'Research, libraries and tools', count: projects.length + builds.length },
+  { href: '/experiments', name: 'Experiments', what: 'I try to answer my questions with experiments.', count: experiments.length },
+  { href: '/random', name: 'Random', what: "Posts about whatever I'm thinking about.", count: posts.length },
+  { href: '/work', name: 'Work', what: "Where I've worked, what's been published, and the open-source projects I contribute to.", count: roles.length + papers.length },
+  { href: '/projects', name: 'Projects', what: 'Research, libraries pulled out of research code, tools, and things built for fun.', count: projects.length + builds.length },
 ];
 
 const pad = (n: number) => String(n).padStart(2, '0');
